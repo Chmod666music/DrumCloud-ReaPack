@@ -1,0 +1,1529 @@
+desc: DrumCloud JS
+version: 0.17-beta
+author: Chmod666music
+about:
+  # DrumCloud JS
+  A granular sample instrument for REAPER with waveform display, sample ranges,
+  animated grains and five position movement modes.
+changelog:
+  Initial public beta release.
+links:
+  GitHub repository https://github.com/Chmod666music/DrumCloud-ReaPack
+provides:
+  [data] Samples/default.wav > DrumCloud/default.wav
+  [data] Samples/DrumCloud_909_135.wav > DrumCloud/DrumCloud_909_135.wav
+  [data] Samples/DrumCloud_DnB_175.wav > DrumCloud/DrumCloud_DnB_175.wav
+  [data] Samples/DrumCloud_HipHop_118.wav > DrumCloud/DrumCloud_HipHop_118.wav
+  [data] Samples/DrumCloud_Linn_64.wav > DrumCloud/DrumCloud_Linn_64.wav
+  [data] Samples/DrumCloud_LiveDnB_160.wav > DrumCloud/DrumCloud_LiveDnB_160.wav
+  [data] Samples/DrumCloud_PopDrums_117.wav > DrumCloud/DrumCloud_PopDrums_117.wav
+  [data] Samples/DrumCloud_Pop_105.wav > DrumCloud/DrumCloud_Pop_105.wav
+  [data] Samples/DrumCloud_Pop_78.wav > DrumCloud/DrumCloud_Pop_78.wav
+  [data] Samples/DrumCloud_TR8S_Loop.wav > DrumCloud/DrumCloud_TR8S_Loop.wav
+  [data] Samples/DrumCloud_Ultrabeat_Break.wav > DrumCloud/DrumCloud_Ultrabeat_Break.wav
+  [data] Samples/SAMPLE_LICENSES.txt > DrumCloud/SAMPLE_LICENSES.txt
+  [data] Samples/ORIGINAL_README_AND_LICENSE.txt > DrumCloud/ORIGINAL_README_AND_LICENSE.txt
+tags:instrument sampler granular
+options:maxmem=128000000
+
+slider1:/DrumCloud:default.wav:Sample
+slider2:root_note=60<0,127,1>Root MIDI note
+slider3:grain_size_ms=180<10,1000,1>Grain Size (ms)
+slider4:grain_position=0.50<0,1,0.001>Position
+slider5:density=8<1,40,0.1>Density (grains/sec)
+slider6:position_spread=0.10<0,1,0.001>Position Spread
+slider7:scan_speed=0.05<-1,1,0.001>Scan Speed
+slider8:scan_on=0<0,1,1{Off,On}>Scan
+slider9:stereo_spread=0.50<0,1,0.001>Stereo Spread
+slider10:output_db=-6<-60,6,0.1>Output (dB)
+slider11:position_mode=2<0,4,1{Forward,Backward,Ping Pong,Random Jump,Random Walk}>Position Mode
+slider12:sample_start=0<0,1,0.001>Sample Start
+slider13:sample_end=1<0,1,0.001>Sample End
+
+@init
+
+version = 0.17;
+
+
+// ==================================================
+// MEMORY LAYOUT
+// ==================================================
+
+max_grains = 8;
+
+active_base    = 0;
+phase_base     = 16;
+start_base     = 32;
+step_base      = 48;
+length_base    = 64;
+velocity_base  = 80;
+pan_base       = 96;
+
+sample_buffer = 1024;
+
+
+// ==================================================
+// SAMPLE STATE
+// ==================================================
+
+sample_length = 0;
+sample_channels = 0;
+sample_samplerate = 0;
+frame_count = 0;
+scan_position = 0.5;
+range_start = 0;
+range_end = 1;
+scan_direction = 1;
+scan_random_counter = 0;
+random_walk_direction = 0;
+last_position_mode = 2;
+last_scan_on = 0;
+
+last_sample = -1;
+
+
+// ==================================================
+// MIDI / CLOUD STATE
+// ==================================================
+
+note_held = 0;
+
+current_note = -1;
+current_velocity = 0;
+
+pitch_ratio = 1;
+playback_step = 1;
+
+spawn_counter = 0;
+
+active_grains = 0;
+
+
+// ==================================================
+// INITIAL CLEAR
+// ==================================================
+
+i = 0;
+
+loop(max_grains,
+
+    active_base[i] = 0;
+    phase_base[i] = 0;
+    start_base[i] = 0;
+    step_base[i] = 1;
+    length_base[i] = 1;
+    velocity_base[i] = 0;
+    pan_base[i] = 0;
+
+    i += 1;
+);
+
+
+// ==================================================
+// SLIDERS / SAMPLE LOADING
+// ==================================================
+
+@slider
+
+output_gain =
+    10 ^ (output_db / 20);
+
+// Keep a valid range even if the automation lanes cross.
+range_start = min(sample_start, sample_end);
+range_end = max(sample_start, sample_end);
+
+range_end - range_start < 0.001 ? (
+    range_end = min(1, range_start + 0.001);
+    range_end - range_start < 0.001 ? (
+        range_start = max(0, range_end - 0.001);
+    );
+);
+
+grain_position = max(range_start, min(range_end, grain_position));
+scan_position = max(range_start, min(range_end, scan_position));
+
+scan_on && !last_scan_on ? (
+    scan_position = grain_position;
+    scan_direction = 1;
+    scan_random_counter = 0;
+);
+
+position_mode != last_position_mode ? (
+    scan_direction = 1;
+    scan_random_counter = 0;
+    last_position_mode = position_mode;
+);
+
+!scan_on ? (
+    scan_position = grain_position;
+);
+
+last_scan_on = scan_on;
+
+
+slider1 != last_sample ? (
+
+    handle = file_open(slider1);
+
+    handle >= 0 ? (
+
+        file_riff(
+            handle,
+            sample_channels,
+            sample_samplerate
+        );
+
+        sample_length =
+            file_avail(handle);
+
+        sample_length > 0 ? (
+
+            file_mem(
+                handle,
+                sample_buffer,
+                sample_length
+            );
+        );
+
+        file_close(handle);
+
+
+        sample_channels > 0 ? (
+
+            frame_count =
+                sample_length /
+                sample_channels;
+        );
+
+
+        // Stop existing grains
+        i = 0;
+
+        loop(max_grains,
+
+            active_base[i] = 0;
+
+            i += 1;
+        );
+
+        active_grains = 0;
+    );
+
+    last_sample = slider1;
+);
+
+
+// ==================================================
+// MIDI
+// ==================================================
+
+@block
+
+while (
+    midirecv(offset, msg1, msg23) ?
+
+    (
+
+        status =
+            msg1 & $xF0;
+
+        note =
+            msg23 & $x7F;
+
+        velocity =
+            (msg23 / 256) & $x7F;
+
+
+        // ------------------------------------------
+        // NOTE ON
+        // ------------------------------------------
+
+        status == $x90 &&
+        velocity > 0 ? (
+
+            current_note = note;
+            current_velocity = velocity;
+
+
+            pitch_ratio =
+                2 ^
+                (
+                    (note - root_note)
+                    /
+                    12
+                );
+
+
+            playback_step =
+                pitch_ratio *
+                (
+                    sample_samplerate /
+                    srate
+                );
+
+
+            note_held = 1;
+
+            // Spawn first grain immediately
+            spawn_counter = 0;
+        );
+
+
+        // ------------------------------------------
+        // NOTE OFF
+        // ------------------------------------------
+
+        (
+            status == $x80
+        )
+        ||
+        (
+            status == $x90 &&
+            velocity == 0
+        ) ? (
+
+            note == current_note ? (
+
+                note_held = 0;
+            );
+        );
+
+
+        1;
+    );
+);
+
+
+// ==================================================
+// AUDIO
+// ==================================================
+
+@sample
+
+out_l = 0;
+out_r = 0;
+
+// ==================================================
+// POSITION MODES
+// ==================================================
+
+scan_on && frame_count > 1 ? (
+
+    // Forward: always move right and wrap at the end.
+    position_mode == 0 ? (
+        scan_position += abs(scan_speed) / srate;
+        scan_position >= range_end ? (
+            scan_position = range_start + (scan_position - range_end);
+        );
+    );
+
+    // Backward: always move left and wrap at the start.
+    position_mode == 1 ? (
+        scan_position -= abs(scan_speed) / srate;
+        scan_position < range_start ? (
+            scan_position = range_end - (range_start - scan_position);
+        );
+    );
+
+    // Ping Pong: reflect naturally at both ends.
+    position_mode == 2 ? (
+        scan_position +=
+            scan_speed *
+            scan_direction /
+            srate;
+
+        scan_position > range_end ? (
+            scan_position = 2 * range_end - scan_position;
+            scan_direction = -scan_direction;
+        );
+
+        scan_position < range_start ? (
+            scan_position = 2 * range_start - scan_position;
+            scan_direction = -scan_direction;
+        );
+    );
+
+    // Random Jump: Scan Speed controls jumps per second.
+    position_mode == 3 && abs(scan_speed) > 0 ? (
+        scan_random_counter <= 0 ? (
+            scan_position =
+                range_start +
+                rand(1) *
+                (range_end - range_start);
+            scan_random_counter =
+                srate /
+                max(
+                    0.01,
+                    abs(scan_speed)
+                );
+        );
+
+        scan_random_counter -= 1;
+    );
+
+    // Random Walk: choose a new drift direction four times per second.
+    position_mode == 4 && abs(scan_speed) > 0 ? (
+        scan_random_counter <= 0 ? (
+            random_walk_direction = rand(2) - 1;
+            scan_random_counter = srate * 0.25;
+        );
+
+        scan_random_counter -= 1;
+
+        scan_position +=
+            random_walk_direction *
+            abs(scan_speed) /
+            srate;
+
+        scan_position > range_end ? (
+            scan_position = 2 * range_end - scan_position;
+            random_walk_direction = -abs(random_walk_direction);
+        );
+
+        scan_position < range_start ? (
+            scan_position = 2 * range_start - scan_position;
+            random_walk_direction = abs(random_walk_direction);
+        );
+    );
+
+    scan_position = max(range_start, min(range_end, scan_position));
+
+    grain_position =
+        scan_position;
+);
+
+
+// ==================================================
+// SPAWN GRAINS
+// ==================================================
+
+note_held &&
+frame_count > 1 ? (
+
+    spawn_counter <= 0 ? (
+
+        free_grain = -1;
+
+        i = 0;
+
+
+        loop(max_grains,
+
+            free_grain < 0 &&
+            active_base[i] == 0 ? (
+
+                free_grain = i;
+            );
+
+            i += 1;
+        );
+
+
+        // ------------------------------------------
+        // CREATE GRAIN
+        // ------------------------------------------
+
+        free_grain >= 0 ? (
+
+            grain_frames =
+                max(
+                    1,
+                    grain_size_ms *
+                    0.001 *
+                    srate
+                );
+
+            range_start_frame =
+                range_start *
+                (frame_count - 1);
+
+            range_end_frame =
+                range_end *
+                (frame_count - 1);
+
+            range_source_length =
+                max(
+                    1,
+                    range_end_frame -
+                    range_start_frame -
+                    2
+                );
+
+            // Short ranges shorten grains so playback stays in range.
+            grain_frames =
+                min(
+                    grain_frames,
+                    max(
+                        1,
+                        range_source_length /
+                        max(0.000001, playback_step)
+                    )
+                );
+
+            grain_source_length =
+                grain_frames *
+                playback_step;
+
+            range_max_start =
+                max(
+                    range_start_frame,
+                    range_end_frame -
+                    grain_source_length
+                );
+
+
+        // --------------------------------------
+        // POSITION SPREAD
+        // --------------------------------------
+
+        random_offset =
+            (rand(2) - 1) *
+            position_spread;
+
+        // Spread is relative to whole sample
+        spread_position =
+            grain_position +
+            random_offset;
+
+        // Keep every grain inside the selected sample range.
+        spread_position =
+            max(
+                range_start,
+                min(
+                    range_end,
+                    spread_position
+                )
+            );
+
+        range_position =
+            (spread_position - range_start) /
+            max(0.001, range_end - range_start);
+
+        grain_start =
+            range_start_frame +
+            range_position *
+            (range_max_start - range_start_frame);
+
+
+            // RANDOM PAN
+            grain_pan =
+                (
+                    rand(2) - 1
+                )
+                *
+                stereo_spread;
+
+
+            active_base[free_grain] =
+                1;
+
+            phase_base[free_grain] =
+                0;
+
+            start_base[free_grain] =
+                grain_start;
+
+            step_base[free_grain] =
+                playback_step;
+
+            length_base[free_grain] =
+                grain_frames;
+
+            velocity_base[free_grain] =
+                current_velocity /
+                127;
+
+            pan_base[free_grain] =
+                grain_pan;
+        );
+
+
+        // ------------------------------------------
+        // NEXT GRAIN
+        // ------------------------------------------
+
+        spawn_counter =
+            srate /
+            max(
+                0.1,
+                density
+            );
+    );
+
+
+    spawn_counter -= 1;
+);
+
+
+// ==================================================
+// PROCESS ACTIVE GRAINS
+// ==================================================
+
+active_grains = 0;
+
+i = 0;
+
+
+loop(max_grains,
+
+    active_base[i] ? (
+
+        grain_phase =
+            phase_base[i];
+
+        grain_length =
+            length_base[i];
+
+        grain_step =
+            step_base[i];
+
+        grain_pan =
+            pan_base[i];
+
+
+        source_pos =
+            start_base[i] +
+            grain_phase *
+            grain_step;
+
+
+        (
+            grain_phase <
+            grain_length
+        )
+        &&
+        (
+            source_pos <
+            frame_count - 1
+        ) ? (
+
+
+            // --------------------------------------
+            // INTERPOLATION
+            // --------------------------------------
+
+            frame_int =
+                floor(
+                    source_pos
+                );
+
+
+            frac =
+                source_pos -
+                frame_int;
+
+
+            next_frame =
+                min(
+                    frame_int + 1,
+                    frame_count - 1
+                );
+
+
+            // --------------------------------------
+            // MONO
+            // --------------------------------------
+
+            sample_channels == 1 ? (
+
+                s1 =
+                    sample_buffer[
+                        frame_int
+                    ];
+
+                s2 =
+                    sample_buffer[
+                        next_frame
+                    ];
+
+
+                grain_l =
+                    s1 +
+                    (
+                        s2 - s1
+                    ) *
+                    frac;
+
+
+                grain_r =
+                    grain_l;
+
+            ) : (
+
+
+                // ----------------------------------
+                // STEREO
+                // ----------------------------------
+
+                idx1 =
+                    frame_int *
+                    sample_channels;
+
+
+                idx2 =
+                    next_frame *
+                    sample_channels;
+
+
+                l1 =
+                    sample_buffer[
+                        idx1
+                    ];
+
+                l2 =
+                    sample_buffer[
+                        idx2
+                    ];
+
+                r1 =
+                    sample_buffer[
+                        idx1 + 1
+                    ];
+
+                r2 =
+                    sample_buffer[
+                        idx2 + 1
+                    ];
+
+
+                grain_l =
+                    l1 +
+                    (
+                        l2 - l1
+                    ) *
+                    frac;
+
+
+                grain_r =
+                    r1 +
+                    (
+                        r2 - r1
+                    ) *
+                    frac;
+            );
+
+
+            // --------------------------------------
+            // HANN WINDOW
+            // --------------------------------------
+
+            normalized_phase =
+                grain_phase /
+                max(
+                    1,
+                    grain_length - 1
+                );
+
+
+            grain_env =
+                0.5 -
+                0.5 *
+                cos(
+                    2 *
+                    $pi *
+                    normalized_phase
+                );
+
+
+            // --------------------------------------
+            // EQUAL POWER PAN
+            // --------------------------------------
+
+            pan_l =
+                sqrt(
+                    0.5 *
+                    (
+                        1 -
+                        grain_pan
+                    )
+                );
+
+
+            pan_r =
+                sqrt(
+                    0.5 *
+                    (
+                        1 +
+                        grain_pan
+                    )
+                );
+
+
+            grain_gain =
+                grain_env *
+                velocity_base[i];
+
+
+            grain_l *=
+                grain_gain *
+                pan_l;
+
+
+            grain_r *=
+                grain_gain *
+                pan_r;
+
+
+            // --------------------------------------
+            // MIX
+            // --------------------------------------
+
+            out_l += grain_l;
+            out_r += grain_r;
+
+
+            phase_base[i] += 1;
+
+            active_grains += 1;
+
+        ) : (
+
+            active_base[i] = 0;
+        );
+    );
+
+
+    i += 1;
+);
+
+
+// ==================================================
+// CLOUD NORMALIZATION
+// ==================================================
+
+cloud_gain =
+    1 /
+    sqrt(
+        max(
+            1,
+            active_grains
+        )
+    );
+
+
+out_l *= cloud_gain;
+out_r *= cloud_gain;
+
+
+// ==================================================
+// OUTPUT
+// ==================================================
+
+spl0 =
+    out_l *
+    output_gain;
+
+
+spl1 =
+    out_r *
+    output_gain;
+
+
+// ==================================================
+// GUI
+// ==================================================
+
+@gfx 800 800
+
+
+// --------------------------------------------------
+// BACKGROUND
+// --------------------------------------------------
+
+gfx_set(
+    0.08,
+    0.08,
+    0.10,
+    1
+);
+
+gfx_rect(
+    0,
+    0,
+    gfx_w,
+    gfx_h
+);
+
+
+// --------------------------------------------------
+// TITLE
+// --------------------------------------------------
+
+gfx_set(
+    0.92,
+    0.92,
+    0.92,
+    1
+);
+
+gfx_setfont(
+    1,
+    "Arial",
+    28
+);
+
+gfx_x = 30;
+gfx_y = 25;
+
+gfx_drawstr(
+    "DRUMCLOUD JS"
+);
+
+gfx_setfont(
+    1,
+    "Arial",
+    15
+);
+
+gfx_x = 30;
+gfx_y = 65;
+
+gfx_drawstr(
+    "v0.17  SAMPLE RANGE"
+);
+
+
+// ==================================================
+// WAVEFORM AREA
+// ==================================================
+
+wave_x = 30;
+wave_y = 105;
+
+wave_w =
+    gfx_w - 60;
+
+wave_h = 180;
+
+
+// ==================================================
+// MOUSE CONTROL
+// ==================================================
+
+// Is mouse inside waveform?
+
+mouse_inside_wave =
+    mouse_x >= wave_x &&
+    mouse_x <= wave_x + wave_w &&
+    mouse_y >= wave_y &&
+    mouse_y <= wave_y + wave_h;
+
+
+// Left mouse button currently down?
+
+mouse_down =
+    mouse_cap & 1;
+
+
+// Start or continue dragging
+
+mouse_inside_wave &&
+mouse_down ? (
+
+    grain_position =
+        (mouse_x - wave_x) /
+        wave_w;
+
+    grain_position =
+        max(
+            range_start,
+            min(
+                range_end,
+                grain_position
+            )
+        );
+
+    scan_position =
+        grain_position;
+
+    sliderchange(slider4);
+);
+
+
+// ==================================================
+// WAVEFORM BACKGROUND
+// ==================================================
+
+gfx_set(
+    0.04,
+    0.04,
+    0.05,
+    1
+);
+
+gfx_rect(
+    wave_x,
+    wave_y,
+    wave_w,
+    wave_h
+);
+
+
+// --------------------------------------------------
+// CENTRE LINE
+// --------------------------------------------------
+
+gfx_set(
+    0.22,
+    0.22,
+    0.25,
+    1
+);
+
+gfx_line(
+    wave_x,
+    wave_y + wave_h * 0.5,
+    wave_x + wave_w,
+    wave_y + wave_h * 0.5
+);
+
+
+// ==================================================
+// DRAW WAVEFORM
+// ==================================================
+
+frame_count > 1 ? (
+
+    gfx_set(
+        0.55,
+        0.72,
+        0.88,
+        1
+    );
+
+    x = 0;
+
+    last_wave_y =
+        wave_y +
+        wave_h * 0.5;
+
+    loop(
+        floor(wave_w),
+
+        normalized_x =
+            x /
+            max(
+                1,
+                wave_w - 1
+            );
+
+        waveform_frame =
+            floor(
+                normalized_x *
+                (
+                    frame_count - 1
+                )
+            );
+
+        sample_channels == 1 ? (
+
+            waveform_value =
+                sample_buffer[
+                    waveform_frame
+                ];
+
+        ) : (
+
+            waveform_index =
+                waveform_frame *
+                sample_channels;
+
+            waveform_l =
+                sample_buffer[
+                    waveform_index
+                ];
+
+            waveform_r =
+                sample_buffer[
+                    waveform_index + 1
+                ];
+
+            waveform_value =
+                (
+                    waveform_l +
+                    waveform_r
+                )
+                *
+                0.5;
+        );
+
+        current_wave_y =
+            wave_y +
+            wave_h * 0.5 -
+            waveform_value *
+            wave_h *
+            0.45;
+
+        x > 0 ? (
+
+            gfx_line(
+                wave_x + x - 1,
+                last_wave_y,
+                wave_x + x,
+                current_wave_y
+            );
+        );
+
+        last_wave_y =
+            current_wave_y;
+
+        x += 1;
+    );
+);
+
+
+// ==================================================
+// ACTIVE SAMPLE RANGE
+// ==================================================
+
+range_start_x = wave_x + range_start * wave_w;
+range_end_x = wave_x + range_end * wave_w;
+
+// Dim the waveform outside the selected range.
+gfx_set(0.02, 0.02, 0.025, 0.78);
+gfx_rect(
+    wave_x,
+    wave_y,
+    max(0, range_start_x - wave_x),
+    wave_h
+);
+gfx_rect(
+    range_end_x,
+    wave_y,
+    max(0, wave_x + wave_w - range_end_x),
+    wave_h
+);
+
+// Range boundary markers.
+gfx_set(0.25, 0.85, 1.0, 1);
+gfx_line(range_start_x, wave_y, range_start_x, wave_y + wave_h);
+gfx_line(range_end_x, wave_y, range_end_x, wave_y + wave_h);
+
+
+// ==================================================
+// ANIMATED GRAIN MARKERS
+// ==================================================
+
+frame_count > 1 ? (
+
+    i = 0;
+
+    loop(
+        max_grains,
+
+        active_base[i] ? (
+
+            // Current source position of this grain
+            grain_current_pos =
+                start_base[i] +
+                phase_base[i] *
+                step_base[i];
+
+            grain_marker_pos =
+                grain_current_pos /
+                frame_count;
+
+            grain_marker_pos =
+                max(
+                    0,
+                    min(
+                        1,
+                        grain_marker_pos
+                    )
+                );
+
+            grain_marker_x =
+                wave_x +
+                grain_marker_pos *
+                wave_w;
+
+
+            // --------------------------------------
+            // Grain progress 0..1
+            // --------------------------------------
+
+            grain_progress =
+                phase_base[i] /
+                max(
+                    1,
+                    length_base[i]
+                );
+
+            grain_progress =
+                max(
+                    0,
+                    min(
+                        1,
+                        grain_progress
+                    )
+                );
+
+
+            // --------------------------------------
+            // Marker brightness follows grain life
+            // --------------------------------------
+
+            marker_alpha =
+                0.25 +
+                0.75 *
+                (
+                    1 -
+                    grain_progress
+                );
+
+
+            gfx_set(
+                1.0,
+                0.65,
+                0.20,
+                marker_alpha
+            );
+
+
+            gfx_line(
+                grain_marker_x,
+                wave_y + 10,
+                grain_marker_x,
+                wave_y + wave_h - 10
+            );
+
+
+            // --------------------------------------
+            // Small dot at center line
+            // --------------------------------------
+
+            gfx_circle(
+                grain_marker_x,
+                wave_y + wave_h * 0.5,
+                3,
+                1
+            );
+        );
+
+
+        i += 1;
+    );
+);
+
+
+// ==================================================
+// MAIN POSITION MARKER
+// ==================================================
+
+position_x =
+    wave_x +
+    grain_position *
+    wave_w;
+
+gfx_set(
+    0.35,
+    1.0,
+    0.45,
+    1
+);
+
+gfx_line(
+    position_x,
+    wave_y,
+    position_x,
+    wave_y + wave_h
+);
+
+gfx_triangle(
+    position_x - 7,
+    wave_y,
+
+    position_x + 7,
+    wave_y,
+
+    position_x,
+    wave_y + 10
+);
+
+
+// ==================================================
+// WAVEFORM HOVER FEEDBACK
+// ==================================================
+
+mouse_inside_wave ? (
+
+    gfx_set(
+        1.0,
+        1.0,
+        1.0,
+        0.10
+    );
+
+    gfx_line(
+        mouse_x,
+        wave_y,
+        mouse_x,
+        wave_y + wave_h
+    );
+);
+
+
+// --------------------------------------------------
+// WAVEFORM BORDER
+// --------------------------------------------------
+
+gfx_set(
+    0.35,
+    0.35,
+    0.40,
+    1
+);
+
+gfx_rect(
+    wave_x,
+    wave_y,
+    wave_w,
+    wave_h,
+    0
+);
+
+
+// ==================================================
+// POSITION TEXT
+// ==================================================
+
+gfx_set(
+    0.85,
+    0.85,
+    0.85,
+    1
+);
+
+gfx_x = 30;
+gfx_y = 300;
+
+gfx_drawstr(
+    "Position: "
+);
+
+gfx_drawnumber(
+    grain_position * 100,
+    1
+);
+
+gfx_drawstr(
+    "%"
+);
+
+
+// ==================================================
+// ENGINE INFORMATION
+// ==================================================
+
+gfx_x = 30;
+gfx_y = 335;
+
+gfx_drawstr(
+    "Sample: "
+);
+
+gfx_drawnumber(
+    frame_count,
+    0
+);
+
+gfx_drawstr(
+    " frames"
+);
+
+
+gfx_x = 30;
+gfx_y = 360;
+
+gfx_drawstr(
+    "Sample rate: "
+);
+
+gfx_drawnumber(
+    sample_samplerate,
+    0
+);
+
+gfx_drawstr(
+    " Hz"
+);
+
+
+gfx_x = 30;
+gfx_y = 395;
+
+gfx_drawstr(
+    "MIDI note: "
+);
+
+gfx_drawnumber(
+    current_note,
+    0
+);
+
+
+gfx_x = 30;
+gfx_y = 420;
+
+gfx_drawstr(
+    "Pitch ratio: "
+);
+
+gfx_drawnumber(
+    pitch_ratio,
+    3
+);
+
+
+gfx_x = 30;
+gfx_y = 455;
+
+gfx_drawstr(
+    "Active grains: "
+);
+
+gfx_drawnumber(
+    active_grains,
+    0
+);
+
+
+gfx_x = 30;
+gfx_y = 480;
+
+gfx_drawstr(
+    "Density: "
+);
+
+gfx_drawnumber(
+    density,
+    1
+);
+
+gfx_drawstr(
+    " grains/sec"
+);
+
+
+gfx_x = 30;
+gfx_y = 505;
+
+gfx_drawstr(
+    "Stereo spread: "
+);
+
+gfx_drawnumber(
+    stereo_spread,
+    3
+);
+
+// ==================================================
+// SCAN INFORMATION
+// ==================================================
+
+gfx_x = 30;
+gfx_y = 555;
+
+gfx_drawstr(
+    "Scan speed: "
+);
+
+gfx_drawnumber(
+    scan_speed,
+    3
+);
+
+
+gfx_x = 30;
+gfx_y = 580;
+
+gfx_drawstr(
+    "Scan: "
+);
+
+scan_on ? (
+    gfx_drawstr("ON");
+) : (
+    gfx_drawstr("OFF");
+);
+
+
+gfx_x = 30;
+gfx_y = 605;
+
+gfx_drawstr(
+    "Position mode: "
+);
+
+position_mode == 0 ? gfx_drawstr("FORWARD");
+position_mode == 1 ? gfx_drawstr("BACKWARD");
+position_mode == 2 ? gfx_drawstr("PING PONG");
+position_mode == 3 ? gfx_drawstr("RANDOM JUMP");
+position_mode == 4 ? gfx_drawstr("RANDOM WALK");
+
+
+gfx_x = 30;
+gfx_y = 640;
+
+gfx_drawstr("Sample start: ");
+gfx_drawnumber(range_start * 100, 1);
+gfx_drawstr("%");
+
+
+gfx_x = 30;
+gfx_y = 665;
+
+gfx_drawstr("Sample end: ");
+gfx_drawnumber(range_end * 100, 1);
+gfx_drawstr("%");
+
+
+// ==================================================
+// STATUS
+// ==================================================
+
+gfx_x = 30;
+gfx_y = 720;
+
+note_held ? (
+
+    gfx_set(
+        0.35,
+        1.0,
+        0.45,
+        1
+    );
+
+    gfx_drawstr(
+        "CLOUD ACTIVE"
+    );
+
+) : (
+
+    active_grains > 0 ? (
+
+        gfx_set(
+            1.0,
+            0.75,
+            0.25,
+            1
+        );
+
+        gfx_drawstr(
+            "GRAINS DECAYING..."
+        );
+
+    ) : (
+
+        gfx_set(
+            0.55,
+            0.55,
+            0.60,
+            1
+        );
+
+        gfx_drawstr(
+            "WAITING FOR MIDI..."
+        );
+    );
+);
