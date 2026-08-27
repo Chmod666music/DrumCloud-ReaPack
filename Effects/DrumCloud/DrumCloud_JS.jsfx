@@ -21,8 +21,9 @@ provides:
   [data] Samples/DrumCloud_Pop_78.wav > DrumCloud/DrumCloud_Pop_78.wav
   [data] Samples/DrumCloud_TR8S_Loop.wav > DrumCloud/DrumCloud_TR8S_Loop.wav
   [data] Samples/DrumCloud_Ultrabeat_Break.wav > DrumCloud/DrumCloud_Ultrabeat_Break.wav
-  [data] Samples/SAMPLE_LICENSES.txt > DrumCloud/SAMPLE_LICENSES.txt
-  [data] Samples/ORIGINAL_README_AND_LICENSE.txt > DrumCloud/ORIGINAL_README_AND_LICENSE.txt
+  [data] Samples/SAMPLE_LICENSES.md > DrumCloud/SAMPLE_LICENSES.txt
+  [data] Samples/ORIGINAL_README_AND_LICENSE.md > DrumCloud/ORIGINAL_README_AND_LICENSE.txt
+
 tags:instrument sampler granular
 options:maxmem=128000000
 
