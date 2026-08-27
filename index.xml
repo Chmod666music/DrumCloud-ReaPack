@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="DrumCloud ReaPack">
+<index version="1" name="DrumCloud ReaPack" commit="bc70a05053f88544d2b82fda05f2f1e54525db5d">
+  <category name="Effects/DrumCloud">
+    <reapack name="DrumCloud_JS.jsfx" type="effect" desc="DrumCloud JS">
+      <metadata>
+        <link rel="website" href="https://github.com/Chmod666music/DrumCloud-ReaPack">GitHub repository</link>
+      </metadata>
+      <version name="0.17.1-beta" author="Chmod666music" time="2026-08-27T20:06:57Z">
+        <changelog><![CDATA[Initial public beta ReaPack release.]]></changelog>
+        <source>https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/DrumCloud_JS.jsfx</source>
+        <source type="data" file="DrumCloud/default.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/default.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_909_135.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_909_135.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_DnB_175.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_DnB_175.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_HipHop_118.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_HipHop_118.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_Linn_64.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_Linn_64.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_LiveDnB_160.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_LiveDnB_160.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_PopDrums_117.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_PopDrums_117.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_Pop_105.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_Pop_105.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_Pop_78.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_Pop_78.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_TR8S_Loop.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_TR8S_Loop.wav</source>
+        <source type="data" file="DrumCloud/DrumCloud_Ultrabeat_Break.wav">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/DrumCloud_Ultrabeat_Break.wav</source>
+        <source type="data" file="DrumCloud/SAMPLE_LICENSES.txt">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/SAMPLE_LICENSES.md</source>
+        <source type="data" file="DrumCloud/ORIGINAL_README_AND_LICENSE.txt">https://github.com/Chmod666music/DrumCloud-ReaPack/raw/bc70a05053f88544d2b82fda05f2f1e54525db5d/Effects/DrumCloud/Samples/ORIGINAL_README_AND_LICENSE.md</source>
+      </version>
+    </reapack>
+  </category>
   <metadata>
     <link rel="website" href="https://github.com/Chmod666music/DrumCloud-ReaPack">GitHub</link>
   </metadata>
