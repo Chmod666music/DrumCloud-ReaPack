@@ -1,12 +1,8 @@
 desc: DrumCloud JS
-version: 0.17-beta
+version: 0.17.1-beta
 author: Chmod666music
-about:
-  # DrumCloud JS
-  A granular sample instrument for REAPER with waveform display, sample ranges,
-  animated grains and five position movement modes.
 changelog:
-  Initial public beta release.
+  Initial public beta ReaPack release.
 links:
   GitHub repository https://github.com/Chmod666music/DrumCloud-ReaPack
 provides:
