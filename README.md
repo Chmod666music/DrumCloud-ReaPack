@@ -48,7 +48,7 @@ All 130 factory samples were created by
 [REVERBERA](https://freesound.org/people/REVERBERA/) and come from the
 [Reverbera som pack on Freesound](https://freesound.org/people/REVERBERA/packs/45512/).
 They are distributed under CC0 1.0. Detailed source and license information is
-installed in `Data/DrumCloud/SAMPLE_CREDITS_AND_LICENSE.txt`.
+installed in `Data/DrumCloud/SAMPLE_CREDITS_AND_LICENSE.md`.
 
 ## Licenses
 

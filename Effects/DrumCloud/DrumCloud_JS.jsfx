@@ -1,7 +1,8 @@
 desc: DrumCloud JS
-version: 0.23.1
+version: 0.23.2
 author: Chmod666music
 changelog:
+  Keep both bundled credit documents as Markdown throughout installation.
   Prevent the bundled Freesound license manifest from appearing as a JSFX.
   Add filtered Stereo and Ping Pong delay with independent channel times.
   Stabilize Shimmer feedback and add transparent output peak protection.
@@ -145,8 +146,8 @@ provides:
   [data] Samples/Reverbera_851135_y2-7-female-voice-iterative-slight-variation.wav > DrumCloud/Reverbera_851135_y2-7-female-voice-iterative-slight-variation.wav
   [data] Samples/Reverbera_851136_y2-8-whistle-iterative-slight-variation.wav > DrumCloud/Reverbera_851136_y2-8-whistle-iterative-slight-variation.wav
   [data] Samples/Reverbera_851137_y2-9-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851137_y2-9-synth-iterative-slight-variation.wav
-  [data] Samples/SAMPLE_CREDITS_AND_LICENSE.md > DrumCloud/SAMPLE_CREDITS_AND_LICENSE.txt
-  [data] Samples/FREESOUND_ORIGINAL_README_AND_LICENSE.md > DrumCloud/FREESOUND_ORIGINAL_README_AND_LICENSE.txt
+  [data] Samples/SAMPLE_CREDITS_AND_LICENSE.md > DrumCloud/SAMPLE_CREDITS_AND_LICENSE.md
+  [data] Samples/FREESOUND_ORIGINAL_README_AND_LICENSE.md > DrumCloud/FREESOUND_ORIGINAL_README_AND_LICENSE.md
   [data] Presets/DrumCloud_v0.23_46_Factory_Presets.ini > DrumCloud/DrumCloud_v0.23_46_Factory_Presets.ini
   [script main] Presets/Install_DrumCloud_Factory_Presets.lua > DrumCloud/Install_DrumCloud_Factory_Presets.lua
 
