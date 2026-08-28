@@ -1,7 +1,11 @@
 desc: DrumCloud JS
-version: 0.24
+version: 0.24.1
 author: Chmod666music
 changelog:
+  Add optional filename-based Auto Root mapping for tonal factory samples.
+  Leave beats, noise, percussion, whisper, and unstable samples unmapped.
+  Keep active grains inside the selected Sample Start and Sample End range.
+  Halve Grain Size in all 46 factory presets for the expanded shared grain pool.
   Add robust 8-voice polyphonic MIDI with per-note pitch, velocity, and grain scheduling.
   Add oldest-voice stealing and matching channel-aware note-off handling.
   Increase the shared grain pool conservatively from 8 to 32 grains.
@@ -186,10 +190,138 @@ slider25:delay_time_r_ms=500<1,2000,1>Delay Time R (ms)
 slider26:delay_feedback=0.35<0,0.90,0.001>Delay Feedback
 slider27:delay_mix=0.25<0,1,0.001>Delay Mix
 slider28:delay_damping=0.35<0,1,0.001>Delay Damping
+slider29:auto_root=0<0,1,1{Off,On}>Auto Root
 
 @init
 
-version = 0.24;
+version = 0.2401;
+
+
+// ==================================================
+// FACTORY SAMPLE ROOT MAP
+// ==================================================
+
+function recommended_root_for_sample(filename)
+local(root)
+(
+    // -1 means intentionally unmapped. Existing preset/root values remain.
+    root = -1;
+match("*850842*", filename) ? root = 31;
+    match("*850843*", filename) ? root = 40;
+    match("*850844*", filename) ? root = 48;
+    match("*850845*", filename) ? root = 47;
+    match("*850846*", filename) ? root = 76;
+    match("*850847*", filename) ? root = 69;
+    match("*850848*", filename) ? root = 29;
+    match("*850849*", filename) ? root = 45;
+    match("*850850*", filename) ? root = 58;
+    match("*850851*", filename) ? root = 33;
+    match("*850852*", filename) ? root = 67;
+    match("*850853*", filename) ? root = 28;
+    match("*850854*", filename) ? root = 47;
+    match("*850855*", filename) ? root = 67;
+    match("*850856*", filename) ? root = 44;
+    match("*850857*", filename) ? root = 43;
+    match("*850858*", filename) ? root = 40;
+    match("*850859*", filename) ? root = 41;
+    match("*850860*", filename) ? root = 45;
+    match("*850861*", filename) ? root = 45;
+    match("*850863*", filename) ? root = 36;
+    match("*850864*", filename) ? root = 56;
+    match("*850865*", filename) ? root = 38;
+    match("*850866*", filename) ? root = 41;
+    match("*850867*", filename) ? root = 40;
+    match("*850868*", filename) ? root = 28;
+    match("*850869*", filename) ? root = 40;
+    match("*850870*", filename) ? root = 44;
+    match("*850871*", filename) ? root = 55;
+    match("*850872*", filename) ? root = 36;
+    match("*850873*", filename) ? root = 44;
+    match("*850874*", filename) ? root = 45;
+    match("*850875*", filename) ? root = 40;
+    match("*850876*", filename) ? root = 40;
+    match("*850877*", filename) ? root = 30;
+    match("*850878*", filename) ? root = 33;
+    match("*850879*", filename) ? root = 44;
+    match("*850880*", filename) ? root = 33;
+    match("*850881*", filename) ? root = 35;
+    match("*850882*", filename) ? root = 50;
+    match("*850889*", filename) ? root = 43;
+    match("*850890*", filename) ? root = 51;
+    match("*850891*", filename) ? root = 48;
+    match("*850892*", filename) ? root = 51;
+    match("*850893*", filename) ? root = 55;
+    match("*850894*", filename) ? root = 64;
+    match("*850895*", filename) ? root = 70;
+    match("*850896*", filename) ? root = 41;
+    match("*850897*", filename) ? root = 55;
+    match("*850898*", filename) ? root = 57;
+    match("*850899*", filename) ? root = 44;
+    match("*850900*", filename) ? root = 47;
+    match("*850901*", filename) ? root = 81;
+    match("*850902*", filename) ? root = 40;
+    match("*850903*", filename) ? root = 60;
+    match("*851031*", filename) ? root = 76;
+    match("*851032*", filename) ? root = 74;
+    match("*851033*", filename) ? root = 74;
+    match("*851034*", filename) ? root = 55;
+    match("*851035*", filename) ? root = 43;
+    match("*851036*", filename) ? root = 55;
+    match("*851038*", filename) ? root = 24;
+    match("*851039*", filename) ? root = 70;
+    match("*851040*", filename) ? root = 57;
+    match("*851041*", filename) ? root = 90;
+    match("*851042*", filename) ? root = 94;
+    match("*851043*", filename) ? root = 83;
+    match("*851044*", filename) ? root = 38;
+    match("*851045*", filename) ? root = 84;
+    match("*851046*", filename) ? root = 84;
+    match("*851047*", filename) ? root = 63;
+    match("*851048*", filename) ? root = 39;
+    match("*851049*", filename) ? root = 58;
+    match("*851050*", filename) ? root = 91;
+    match("*851051*", filename) ? root = 45;
+    match("*851052*", filename) ? root = 82;
+    match("*851053*", filename) ? root = 67;
+    match("*851054*", filename) ? root = 69;
+    match("*851057*", filename) ? root = 82;
+    match("*851058*", filename) ? root = 84;
+    match("*851059*", filename) ? root = 87;
+    match("*851060*", filename) ? root = 56;
+    match("*851061*", filename) ? root = 80;
+    match("*851062*", filename) ? root = 57;
+    match("*851063*", filename) ? root = 40;
+    match("*851064*", filename) ? root = 68;
+    match("*851065*", filename) ? root = 65;
+    match("*851066*", filename) ? root = 43;
+    match("*851109*", filename) ? root = 59;
+    match("*851110*", filename) ? root = 80;
+    match("*851111*", filename) ? root = 91;
+    match("*851112*", filename) ? root = 55;
+    match("*851113*", filename) ? root = 44;
+    match("*851114*", filename) ? root = 83;
+    match("*851115*", filename) ? root = 69;
+    match("*851116*", filename) ? root = 67;
+    match("*851117*", filename) ? root = 76;
+    match("*851118*", filename) ? root = 29;
+    match("*851120*", filename) ? root = 40;
+    match("*851121*", filename) ? root = 25;
+    match("*851122*", filename) ? root = 33;
+    match("*851123*", filename) ? root = 82;
+    match("*851124*", filename) ? root = 64;
+    match("*851125*", filename) ? root = 54;
+    match("*851126*", filename) ? root = 38;
+    match("*851127*", filename) ? root = 28;
+    match("*851128*", filename) ? root = 86;
+    match("*851129*", filename) ? root = 60;
+    match("*851131*", filename) ? root = 43;
+    match("*851132*", filename) ? root = 71;
+    match("*851133*", filename) ? root = 68;
+    match("*851135*", filename) ? root = 69;
+    match("*851136*", filename) ? root = 97;
+    match("*851137*", filename) ? root = 30;
+    root;
+);
 
 
 // ==================================================
@@ -308,6 +440,8 @@ last_position_mode = 2;
 last_scan_on = 0;
 
 last_sample = -1;
+last_auto_root = 0;
+manual_root_note = root_note;
 
 
 // ==================================================
@@ -366,6 +500,46 @@ loop(max_voices,
 
 output_gain =
     10 ^ (output_db / 20);
+
+sample_selection_changed =
+    slider1 != last_sample;
+
+// Remember the user's/preset's root whenever Auto Root is not taking control.
+!auto_root ? (
+    manual_root_note = root_note;
+);
+
+auto_root_activated =
+    auto_root &&
+    !last_auto_root;
+
+// Auto Root is opt-in. With its default Off state, loading legacy projects
+// and presets preserves their saved Root MIDI note exactly.
+auto_root &&
+(
+    sample_selection_changed ||
+    auto_root_activated
+) ? (
+    strcpy_fromslider(
+        #selected_sample_filename,
+        slider1
+    );
+
+    recommended_root =
+        recommended_root_for_sample(
+            #selected_sample_filename
+        );
+
+    recommended_root >= 0 ? (
+        root_note = recommended_root;
+        slider_automate(root_note);
+    ) : (
+        // Unpitched material returns to the last manual or preset root rather
+        // than inheriting the previous tonal sample's automatic root.
+        root_note = manual_root_note;
+        slider_automate(root_note);
+    );
+);
 
 // Changing reverb structure starts with a clean, predictable room.
 reverb_mode != last_reverb_mode ? (
@@ -631,6 +805,8 @@ slider1 != last_sample ? (
 
     last_sample = slider1;
 );
+
+last_auto_root = auto_root;
 
 
 // ==================================================
@@ -1092,6 +1268,17 @@ loop(max_grains,
             grain_phase *
             grain_step;
 
+        // Re-evaluate the currently selected range for every sample. This
+        // immediately retires grains from an old range after a preset load or
+        // Sample Start/End edit instead of letting them read outside it.
+        current_range_start_frame =
+            range_start *
+            (frame_count - 1);
+
+        current_range_end_frame =
+            range_end *
+            (frame_count - 1);
+
 
         (
             grain_phase <
@@ -1101,6 +1288,16 @@ loop(max_grains,
         (
             source_pos <
             frame_count - 1
+        )
+        &&
+        (
+            source_pos >=
+            current_range_start_frame
+        )
+        &&
+        (
+            source_pos <
+            current_range_end_frame
         ) ? (
 
 
@@ -1869,7 +2066,7 @@ gfx_x = 30;
 gfx_y = 65;
 
 gfx_drawstr(
-    "v0.24  8-VOICE POLYPHONY"
+    "v0.24.1  AUTO ROOT + 8-VOICE POLYPHONY"
 );
 
 
