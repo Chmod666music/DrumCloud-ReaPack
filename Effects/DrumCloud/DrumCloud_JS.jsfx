@@ -1,29 +1,158 @@
 desc: DrumCloud JS
-version: 0.17.1-beta
+version: 0.23
 author: Chmod666music
 changelog:
+  Add filtered Stereo and Ping Pong delay with independent channel times.
+  Stabilize Shimmer feedback and add transparent output peak protection.
+  Add octave-up Shimmer mode with dual-head pitch-shifted feedback.
+  Add stereo Room and Hall Cloud Reverb with size, decay, and damping.
+  Add adjustable per-grain Attack and Release envelopes.
+  Replace the factory library with 130 CC0 sounds created by REVERBERA.
+  Add per-grain Pitch Spread in semitones.
   Initial public beta ReaPack release.
 links:
   GitHub repository https://github.com/Chmod666music/DrumCloud-ReaPack
+  REVERBERA sound pack https://freesound.org/people/REVERBERA/packs/45512/
 provides:
-  [data] Samples/default.wav > DrumCloud/default.wav
-  [data] Samples/DrumCloud_909_135.wav > DrumCloud/DrumCloud_909_135.wav
-  [data] Samples/DrumCloud_DnB_175.wav > DrumCloud/DrumCloud_DnB_175.wav
-  [data] Samples/DrumCloud_HipHop_118.wav > DrumCloud/DrumCloud_HipHop_118.wav
-  [data] Samples/DrumCloud_Linn_64.wav > DrumCloud/DrumCloud_Linn_64.wav
-  [data] Samples/DrumCloud_LiveDnB_160.wav > DrumCloud/DrumCloud_LiveDnB_160.wav
-  [data] Samples/DrumCloud_PopDrums_117.wav > DrumCloud/DrumCloud_PopDrums_117.wav
-  [data] Samples/DrumCloud_Pop_105.wav > DrumCloud/DrumCloud_Pop_105.wav
-  [data] Samples/DrumCloud_Pop_78.wav > DrumCloud/DrumCloud_Pop_78.wav
-  [data] Samples/DrumCloud_TR8S_Loop.wav > DrumCloud/DrumCloud_TR8S_Loop.wav
-  [data] Samples/DrumCloud_Ultrabeat_Break.wav > DrumCloud/DrumCloud_Ultrabeat_Break.wav
-  [data] Samples/SAMPLE_LICENSES.md > DrumCloud/SAMPLE_LICENSES.txt
-  [data] Samples/ORIGINAL_README_AND_LICENSE.md > DrumCloud/ORIGINAL_README_AND_LICENSE.txt
+  [data] Samples/Reverbera_850842_n0-1-keyboards-synth-strings-sustained-pitch.wav > DrumCloud/Reverbera_850842_n0-1-keyboards-synth-strings-sustained-pitch.wav
+  [data] Samples/Reverbera_850843_n0-10-guitar-sustained-pitch.wav > DrumCloud/Reverbera_850843_n0-10-guitar-sustained-pitch.wav
+  [data] Samples/Reverbera_850844_n0-11-guitar-sustained-pitch.wav > DrumCloud/Reverbera_850844_n0-11-guitar-sustained-pitch.wav
+  [data] Samples/Reverbera_850845_n0-12-bass-sustained-pitch.wav > DrumCloud/Reverbera_850845_n0-12-bass-sustained-pitch.wav
+  [data] Samples/Reverbera_850846_n0-13-keyboards-synth-strings-sustained-pitch.wav > DrumCloud/Reverbera_850846_n0-13-keyboards-synth-strings-sustained-pitch.wav
+  [data] Samples/Reverbera_850847_n0-14-ocarina-sustained-pitch.wav > DrumCloud/Reverbera_850847_n0-14-ocarina-sustained-pitch.wav
+  [data] Samples/Reverbera_850848_n0-15-keyboards-synth-strings-sustained-pitch.wav > DrumCloud/Reverbera_850848_n0-15-keyboards-synth-strings-sustained-pitch.wav
+  [data] Samples/Reverbera_850849_n0-2-keyboards-synth-strings-sustained-pitch.wav > DrumCloud/Reverbera_850849_n0-2-keyboards-synth-strings-sustained-pitch.wav
+  [data] Samples/Reverbera_850850_n0-3-harmonica-sustained-pitch.wav > DrumCloud/Reverbera_850850_n0-3-harmonica-sustained-pitch.wav
+  [data] Samples/Reverbera_850851_n0-4-elec.wav > DrumCloud/Reverbera_850851_n0-4-elec.wav
+  [data] Samples/Reverbera_850852_n0-5-keyboards-synth-strings-sustained-pitch.wav > DrumCloud/Reverbera_850852_n0-5-keyboards-synth-strings-sustained-pitch.wav
+  [data] Samples/Reverbera_850853_n0-6-pads-sustained-pitch.wav > DrumCloud/Reverbera_850853_n0-6-pads-sustained-pitch.wav
+  [data] Samples/Reverbera_850854_n0-7-keyboards-synth-strings-sustained-pitch.wav > DrumCloud/Reverbera_850854_n0-7-keyboards-synth-strings-sustained-pitch.wav
+  [data] Samples/Reverbera_850855_n0-8-ocarina-sustained-pitch.wav > DrumCloud/Reverbera_850855_n0-8-ocarina-sustained-pitch.wav
+  [data] Samples/Reverbera_850856_n0-9-bass-sustained-pitch.wav > DrumCloud/Reverbera_850856_n0-9-bass-sustained-pitch.wav
+  [data] Samples/Reverbera_850857_n1-1-keyboards-synth-strings-impulse-pitch.wav > DrumCloud/Reverbera_850857_n1-1-keyboards-synth-strings-impulse-pitch.wav
+  [data] Samples/Reverbera_850858_n1-10-bass-impulse-pitch.wav > DrumCloud/Reverbera_850858_n1-10-bass-impulse-pitch.wav
+  [data] Samples/Reverbera_850859_n1-11-bass-impulse-pitch.wav > DrumCloud/Reverbera_850859_n1-11-bass-impulse-pitch.wav
+  [data] Samples/Reverbera_850860_n1-12-bass-impulse-pitch.wav > DrumCloud/Reverbera_850860_n1-12-bass-impulse-pitch.wav
+  [data] Samples/Reverbera_850861_n1-13-elec.wav > DrumCloud/Reverbera_850861_n1-13-elec.wav
+  [data] Samples/Reverbera_850863_n1-14-bright-piano-impulse-pitch.wav > DrumCloud/Reverbera_850863_n1-14-bright-piano-impulse-pitch.wav
+  [data] Samples/Reverbera_850864_n1-16-elec.wav > DrumCloud/Reverbera_850864_n1-16-elec.wav
+  [data] Samples/Reverbera_850865_n1-17-elec.wav > DrumCloud/Reverbera_850865_n1-17-elec.wav
+  [data] Samples/Reverbera_850866_n1-18-bass-impulse-pitch.wav > DrumCloud/Reverbera_850866_n1-18-bass-impulse-pitch.wav
+  [data] Samples/Reverbera_850867_n1-19-elec.wav > DrumCloud/Reverbera_850867_n1-19-elec.wav
+  [data] Samples/Reverbera_850868_n1-2-elec.wav > DrumCloud/Reverbera_850868_n1-2-elec.wav
+  [data] Samples/Reverbera_850869_n1-20-elec.wav > DrumCloud/Reverbera_850869_n1-20-elec.wav
+  [data] Samples/Reverbera_850870_n1-21-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850870_n1-21-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850871_n1-22-synth-slight-variation-pitch.wav > DrumCloud/Reverbera_850871_n1-22-synth-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850872_n1-23-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850872_n1-23-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850873_n1-24-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850873_n1-24-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850874_n1-25-elec.wav > DrumCloud/Reverbera_850874_n1-25-elec.wav
+  [data] Samples/Reverbera_850875_n1-3-elec.wav > DrumCloud/Reverbera_850875_n1-3-elec.wav
+  [data] Samples/Reverbera_850876_n1-4-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850876_n1-4-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850877_n1-5-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850877_n1-5-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850878_n1-6-elec.wav > DrumCloud/Reverbera_850878_n1-6-elec.wav
+  [data] Samples/Reverbera_850879_n1-7-bass-impulse-pitch.wav > DrumCloud/Reverbera_850879_n1-7-bass-impulse-pitch.wav
+  [data] Samples/Reverbera_850880_n1-8-keyboards-elec.wav > DrumCloud/Reverbera_850880_n1-8-keyboards-elec.wav
+  [data] Samples/Reverbera_850881_n1-9-bass-impulse-pitch.wav > DrumCloud/Reverbera_850881_n1-9-bass-impulse-pitch.wav
+  [data] Samples/Reverbera_850882_n2-1-synths-slight-variation-pitch.wav > DrumCloud/Reverbera_850882_n2-1-synths-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850889_n2-10-keyboards-synth-clav-slight-variation-pitch.wav > DrumCloud/Reverbera_850889_n2-10-keyboards-synth-clav-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850890_n2-11-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850890_n2-11-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850891_n2-12-elec.wav > DrumCloud/Reverbera_850891_n2-12-elec.wav
+  [data] Samples/Reverbera_850892_n2-13-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850892_n2-13-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850893_n2-14-bass-slight-variation-pitch.wav > DrumCloud/Reverbera_850893_n2-14-bass-slight-variation-pitch.wav
+  [data] Samples/Reverbera_850894_n2-15-synth-bells-iterative-pitch.wav > DrumCloud/Reverbera_850894_n2-15-synth-bells-iterative-pitch.wav
+  [data] Samples/Reverbera_850895_n2-16-female-voice-iterative-pitch.wav > DrumCloud/Reverbera_850895_n2-16-female-voice-iterative-pitch.wav
+  [data] Samples/Reverbera_850896_n2-2-piano-iterative-pitch.wav > DrumCloud/Reverbera_850896_n2-2-piano-iterative-pitch.wav
+  [data] Samples/Reverbera_850897_n2-3-bass-iterative-pitch.wav > DrumCloud/Reverbera_850897_n2-3-bass-iterative-pitch.wav
+  [data] Samples/Reverbera_850898_n2-4-steel-pan-iterative-pitch.wav > DrumCloud/Reverbera_850898_n2-4-steel-pan-iterative-pitch.wav
+  [data] Samples/Reverbera_850899_n2-5-electric-guitar-iterative-pitch.wav > DrumCloud/Reverbera_850899_n2-5-electric-guitar-iterative-pitch.wav
+  [data] Samples/Reverbera_850900_n2-6-bass-iterative-pitch.wav > DrumCloud/Reverbera_850900_n2-6-bass-iterative-pitch.wav
+  [data] Samples/Reverbera_850901_n2-7-synth-iterative-pitch.wav > DrumCloud/Reverbera_850901_n2-7-synth-iterative-pitch.wav
+  [data] Samples/Reverbera_850902_n2-8-electric-guitar-iterative-pitch.wav > DrumCloud/Reverbera_850902_n2-8-electric-guitar-iterative-pitch.wav
+  [data] Samples/Reverbera_850903_n2-9-harmonica-iterative-pitch.wav > DrumCloud/Reverbera_850903_n2-9-harmonica-iterative-pitch.wav
+  [data] Samples/Reverbera_850912_w0-17-synth-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850912_w0-17-synth-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850913_w0-2-synth-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850913_w0-2-synth-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850914_w0-3-synth-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850914_w0-3-synth-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850915_w0-4-female-voice-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850915_w0-4-female-voice-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850916_w0-5-female-voice-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850916_w0-5-female-voice-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850917_w0-6-female-voice-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850917_w0-6-female-voice-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850918_w0-7-synth-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850918_w0-7-synth-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850921_w0-8-synth-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850921_w0-8-synth-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850922_w0-9-female-voice-sustained-unpredictable-variation.wav > DrumCloud/Reverbera_850922_w0-9-female-voice-sustained-unpredictable-variation.wav
+  [data] Samples/Reverbera_850964_x0-11-high-pitched-noise-complex-pitch-sustained.wav > DrumCloud/Reverbera_850964_x0-11-high-pitched-noise-complex-pitch-sustained.wav
+  [data] Samples/Reverbera_850975_x1-10-djembe-beat-complex-pitch-impulse.wav > DrumCloud/Reverbera_850975_x1-10-djembe-beat-complex-pitch-impulse.wav
+  [data] Samples/Reverbera_851011_x2-19-eletronic-beat-iterative-complex-pitch.wav > DrumCloud/Reverbera_851011_x2-19-eletronic-beat-iterative-complex-pitch.wav
+  [data] Samples/Reverbera_851029_x2-8-tambourine-iterative-complex-pitch.wav > DrumCloud/Reverbera_851029_x2-8-tambourine-iterative-complex-pitch.wav
+  [data] Samples/Reverbera_851030_x2-9-rattle-iterative-complex-pitch.wav > DrumCloud/Reverbera_851030_x2-9-rattle-iterative-complex-pitch.wav
+  [data] Samples/Reverbera_851031_y0-1-female-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851031_y0-1-female-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851032_y0-10-keyboards-sustained-sight-variation.wav > DrumCloud/Reverbera_851032_y0-10-keyboards-sustained-sight-variation.wav
+  [data] Samples/Reverbera_851033_y0-11-female-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851033_y0-11-female-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851034_y0-12-male-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851034_y0-12-male-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851035_y0-14-male-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851035_y0-14-male-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851036_y0-16-synth-sustained-slight-variation.wav > DrumCloud/Reverbera_851036_y0-16-synth-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851037_y0-17-whispering-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851037_y0-17-whispering-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851038_y0-18-synth-sustained-slight-variation.wav > DrumCloud/Reverbera_851038_y0-18-synth-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851039_y0-19-synth-sustained-slight-variation.wav > DrumCloud/Reverbera_851039_y0-19-synth-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851040_y0-2-synth-sustained-slight-variation.wav > DrumCloud/Reverbera_851040_y0-2-synth-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851041_y0-21-female-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851041_y0-21-female-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851042_y0-22-synth-sustained-slight-variation.wav > DrumCloud/Reverbera_851042_y0-22-synth-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851043_y0-3-female-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851043_y0-3-female-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851044_y0-4-synth-sustained-slight-variation.wav > DrumCloud/Reverbera_851044_y0-4-synth-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851045_y0-5-female-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851045_y0-5-female-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851046_y0-6-female-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851046_y0-6-female-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851047_y0-7-female-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851047_y0-7-female-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851048_y0-9-male-voice-sustained-slight-variation.wav > DrumCloud/Reverbera_851048_y0-9-male-voice-sustained-slight-variation.wav
+  [data] Samples/Reverbera_851049_y1-1-female-voice-impulse-slight-variation.wav > DrumCloud/Reverbera_851049_y1-1-female-voice-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851050_y1-10-whistle-impulse-slight-variation.wav > DrumCloud/Reverbera_851050_y1-10-whistle-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851051_y1-11-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851051_y1-11-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851052_y1-14-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851052_y1-14-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851053_y1-15-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851053_y1-15-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851054_y1-16-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851054_y1-16-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851057_y1-17-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851057_y1-17-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851058_y1-18-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851058_y1-18-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851059_y1-19-flute-impulse-slight-variation.wav > DrumCloud/Reverbera_851059_y1-19-flute-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851060_y1-2-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851060_y1-2-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851061_y1-20-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851061_y1-20-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851062_y1-21-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851062_y1-21-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851063_y1-3-bass-impulse-slight-variation.wav > DrumCloud/Reverbera_851063_y1-3-bass-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851064_y1-4-kazoo-impulse-slight-variation.wav > DrumCloud/Reverbera_851064_y1-4-kazoo-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851065_y1-5-kazoo-impulse-slight-variation.wav > DrumCloud/Reverbera_851065_y1-5-kazoo-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851066_y1-6-elec.wav > DrumCloud/Reverbera_851066_y1-6-elec.wav
+  [data] Samples/Reverbera_851109_y1-7-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851109_y1-7-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851110_y1-8-synth-impulse-slight-variation.wav > DrumCloud/Reverbera_851110_y1-8-synth-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851111_y1-9-whistle-impulse-slight-variation.wav > DrumCloud/Reverbera_851111_y1-9-whistle-impulse-slight-variation.wav
+  [data] Samples/Reverbera_851112_y2-1-elec.wav > DrumCloud/Reverbera_851112_y2-1-elec.wav
+  [data] Samples/Reverbera_851113_y2-10-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851113_y2-10-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851114_y2-11-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851114_y2-11-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851115_y2-12-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851115_y2-12-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851116_y2-13-iterative-slight-variation.wav > DrumCloud/Reverbera_851116_y2-13-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851117_y2-14-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851117_y2-14-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851118_y2-15-synth-bass-iterative-slight-variation.wav > DrumCloud/Reverbera_851118_y2-15-synth-bass-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851120_y2-16-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851120_y2-16-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851121_y2-17-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851121_y2-17-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851122_y2-18-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851122_y2-18-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851123_y2-19-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851123_y2-19-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851124_y2-2-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851124_y2-2-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851125_y2-20-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851125_y2-20-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851126_y2-21-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851126_y2-21-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851127_y2-22-synth-bass-iterative-slight-variation.wav > DrumCloud/Reverbera_851127_y2-22-synth-bass-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851128_y2-23-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851128_y2-23-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851129_y2-24-synth-crystals-iterative-slight-variation.wav > DrumCloud/Reverbera_851129_y2-24-synth-crystals-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851131_y2-3-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851131_y2-3-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851132_y2-4-female-voice-iterative-slight-variation.wav > DrumCloud/Reverbera_851132_y2-4-female-voice-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851133_y2-5-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851133_y2-5-synth-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851134_y2-6-percussions-iterative-slight-variation.wav > DrumCloud/Reverbera_851134_y2-6-percussions-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851135_y2-7-female-voice-iterative-slight-variation.wav > DrumCloud/Reverbera_851135_y2-7-female-voice-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851136_y2-8-whistle-iterative-slight-variation.wav > DrumCloud/Reverbera_851136_y2-8-whistle-iterative-slight-variation.wav
+  [data] Samples/Reverbera_851137_y2-9-synth-iterative-slight-variation.wav > DrumCloud/Reverbera_851137_y2-9-synth-iterative-slight-variation.wav
+  [data] Samples/SAMPLE_CREDITS_AND_LICENSE.md > DrumCloud/SAMPLE_CREDITS_AND_LICENSE.txt
+  [data] Samples/FREESOUND_ORIGINAL_README_AND_LICENSE.txt > DrumCloud/FREESOUND_ORIGINAL_README_AND_LICENSE.txt
+  [data] Presets/DrumCloud_v0.23_46_Factory_Presets.ini > DrumCloud/DrumCloud_v0.23_46_Factory_Presets.ini
+  [script main] Presets/Install_DrumCloud_Factory_Presets.lua > DrumCloud/Install_DrumCloud_Factory_Presets.lua
 
 tags:instrument sampler granular
 options:maxmem=128000000
 
-slider1:/DrumCloud:default.wav:Sample
+slider1:/DrumCloud:Reverbera_851134_y2-6-percussions-iterative-slight-variation.wav:Sample
 slider2:root_note=60<0,127,1>Root MIDI note
 slider3:grain_size_ms=180<10,1000,1>Grain Size (ms)
 slider4:grain_position=0.50<0,1,0.001>Position
@@ -36,10 +165,25 @@ slider10:output_db=-6<-60,6,0.1>Output (dB)
 slider11:position_mode=2<0,4,1{Forward,Backward,Ping Pong,Random Jump,Random Walk}>Position Mode
 slider12:sample_start=0<0,1,0.001>Sample Start
 slider13:sample_end=1<0,1,0.001>Sample End
+slider14:pitch_spread=0<0,12,0.1>Pitch Spread (semitones)
+slider15:attack_ms=10<0,500,1>Attack (ms)
+slider16:release_ms=80<0,1000,1>Release (ms)
+slider17:reverb_mode=0<0,3,1{Off,Room,Hall,Shimmer}>Reverb Mode
+slider18:reverb_mix=0.25<0,1,0.001>Reverb Mix
+slider19:reverb_size=0.50<0,1,0.001>Reverb Size
+slider20:reverb_decay=2.5<0.1,20,0.1>Reverb Decay (s)
+slider21:reverb_damping=0.45<0,1,0.001>Reverb Damping
+slider22:shimmer_amount=0.35<0,1,0.001>Shimmer Amount
+slider23:delay_mode=0<0,2,1{Off,Stereo,Ping Pong}>Delay Mode
+slider24:delay_time_l_ms=375<1,2000,1>Delay Time L (ms)
+slider25:delay_time_r_ms=500<1,2000,1>Delay Time R (ms)
+slider26:delay_feedback=0.35<0,0.90,0.001>Delay Feedback
+slider27:delay_mix=0.25<0,1,0.001>Delay Mix
+slider28:delay_damping=0.35<0,1,0.001>Delay Damping
 
 @init
 
-version = 0.17;
+version = 0.23;
 
 
 // ==================================================
@@ -56,7 +200,77 @@ length_base    = 64;
 velocity_base  = 80;
 pan_base       = 96;
 
-sample_buffer = 1024;
+// Fixed reverb memory stays below the dynamically loaded sample.
+reverb_max_delay = 65536;
+allpass_max_delay = 16384;
+
+comb_l1_base = 1024;
+comb_l2_base = comb_l1_base + reverb_max_delay;
+comb_l3_base = comb_l2_base + reverb_max_delay;
+comb_l4_base = comb_l3_base + reverb_max_delay;
+comb_r1_base = comb_l4_base + reverb_max_delay;
+comb_r2_base = comb_r1_base + reverb_max_delay;
+comb_r3_base = comb_r2_base + reverb_max_delay;
+comb_r4_base = comb_r3_base + reverb_max_delay;
+
+allpass_l1_base = comb_r4_base + reverb_max_delay;
+allpass_l2_base = allpass_l1_base + allpass_max_delay;
+allpass_r1_base = allpass_l2_base + allpass_max_delay;
+allpass_r2_base = allpass_r1_base + allpass_max_delay;
+
+shimmer_max_delay = 32768;
+shimmer_l_base = allpass_r2_base + allpass_max_delay;
+shimmer_r_base = shimmer_l_base + shimmer_max_delay;
+
+reverb_memory_end =
+    shimmer_r_base +
+    shimmer_max_delay;
+
+delay_max_samples = 524288;
+delay_l_base = reverb_memory_end;
+delay_r_base = delay_l_base + delay_max_samples;
+effects_memory_end = delay_r_base + delay_max_samples;
+
+sample_buffer = 2097152;
+
+reverb_write_pos = 0;
+allpass_write_pos = 0;
+shimmer_write_pos = 0;
+shimmer_phase = 0;
+shimmer_feedback_l = 0;
+shimmer_feedback_r = 0;
+last_reverb_mode = -1;
+
+delay_write_pos = 0;
+delay_l_damp = 0;
+delay_r_damp = 0;
+last_delay_mode = -1;
+
+output_limiter_gain = 1;
+
+comb_l1_damp = 0;
+comb_l2_damp = 0;
+comb_l3_damp = 0;
+comb_l4_damp = 0;
+comb_r1_damp = 0;
+comb_r2_damp = 0;
+comb_r3_damp = 0;
+comb_r4_damp = 0;
+
+// Clear all reverb delay memory on startup.
+reverb_clear_index = 1024;
+loop(
+    reverb_memory_end - 1024,
+    reverb_clear_index[0] = 0;
+    reverb_clear_index += 1;
+);
+
+delay_clear_index = reverb_memory_end;
+loop(
+    effects_memory_end - reverb_memory_end,
+    delay_clear_index[0] = 0;
+    delay_clear_index += 1;
+);
 
 
 // ==================================================
@@ -124,6 +338,174 @@ loop(max_grains,
 
 output_gain =
     10 ^ (output_db / 20);
+
+// Changing reverb structure starts with a clean, predictable room.
+reverb_mode != last_reverb_mode ? (
+    reverb_clear_index = 1024;
+
+    loop(
+        reverb_memory_end - 1024,
+        reverb_clear_index[0] = 0;
+        reverb_clear_index += 1;
+    );
+
+    reverb_write_pos = 0;
+    allpass_write_pos = 0;
+    shimmer_write_pos = 0;
+    shimmer_phase = 0;
+    shimmer_feedback_l = 0;
+    shimmer_feedback_r = 0;
+
+    comb_l1_damp = 0;
+    comb_l2_damp = 0;
+    comb_l3_damp = 0;
+    comb_l4_damp = 0;
+    comb_r1_damp = 0;
+    comb_r2_damp = 0;
+    comb_r3_damp = 0;
+    comb_r4_damp = 0;
+
+    last_reverb_mode = reverb_mode;
+);
+
+size_scale =
+    0.65 +
+    reverb_size *
+    1.35;
+
+reverb_mode == 1 ? (
+    delay_ms_1 = 17.3;
+    delay_ms_2 = 23.1;
+    delay_ms_3 = 31.7;
+    delay_ms_4 = 37.9;
+    allpass_ms_1 = 4.7;
+    allpass_ms_2 = 1.7;
+) : (
+    delay_ms_1 = 29.7;
+    delay_ms_2 = 37.1;
+    delay_ms_3 = 41.1;
+    delay_ms_4 = 43.7;
+    allpass_ms_1 = 7.1;
+    allpass_ms_2 = 2.3;
+);
+
+delay_l1 = max(1, min(reverb_max_delay - 1, floor(delay_ms_1 * 0.001 * srate * size_scale)));
+delay_l2 = max(1, min(reverb_max_delay - 1, floor(delay_ms_2 * 0.001 * srate * size_scale)));
+delay_l3 = max(1, min(reverb_max_delay - 1, floor(delay_ms_3 * 0.001 * srate * size_scale)));
+delay_l4 = max(1, min(reverb_max_delay - 1, floor(delay_ms_4 * 0.001 * srate * size_scale)));
+
+stereo_offset =
+    max(
+        1,
+        floor(1.1 * 0.001 * srate)
+    );
+
+delay_r1 = max(1, min(reverb_max_delay - 1, delay_l1 + stereo_offset));
+delay_r2 = max(1, min(reverb_max_delay - 1, delay_l2 + stereo_offset));
+delay_r3 = max(1, min(reverb_max_delay - 1, delay_l3 + stereo_offset));
+delay_r4 = max(1, min(reverb_max_delay - 1, delay_l4 + stereo_offset));
+
+decay_seconds = max(0.1, reverb_decay);
+
+// Shimmer has a second feedback path and therefore needs more headroom.
+feedback_ceiling =
+    reverb_mode == 3 ?
+    0.90 :
+    0.975;
+
+feedback_l1 = min(feedback_ceiling, 10 ^ (-3 * delay_l1 / (srate * decay_seconds)));
+feedback_l2 = min(feedback_ceiling, 10 ^ (-3 * delay_l2 / (srate * decay_seconds)));
+feedback_l3 = min(feedback_ceiling, 10 ^ (-3 * delay_l3 / (srate * decay_seconds)));
+feedback_l4 = min(feedback_ceiling, 10 ^ (-3 * delay_l4 / (srate * decay_seconds)));
+feedback_r1 = min(feedback_ceiling, 10 ^ (-3 * delay_r1 / (srate * decay_seconds)));
+feedback_r2 = min(feedback_ceiling, 10 ^ (-3 * delay_r2 / (srate * decay_seconds)));
+feedback_r3 = min(feedback_ceiling, 10 ^ (-3 * delay_r3 / (srate * decay_seconds)));
+feedback_r4 = min(feedback_ceiling, 10 ^ (-3 * delay_r4 / (srate * decay_seconds)));
+
+damping_coefficient =
+    max(
+        0.02,
+        1 -
+        reverb_damping *
+        0.98
+    );
+
+allpass_delay_l1 = max(1, min(allpass_max_delay - 1, floor(allpass_ms_1 * 0.001 * srate * size_scale)));
+allpass_delay_l2 = max(1, min(allpass_max_delay - 1, floor(allpass_ms_2 * 0.001 * srate * size_scale)));
+allpass_delay_r1 = max(1, min(allpass_max_delay - 1, allpass_delay_l1 + stereo_offset));
+allpass_delay_r2 = max(1, min(allpass_max_delay - 1, allpass_delay_l2 + stereo_offset));
+
+shimmer_window_frames =
+    max(
+        256,
+        min(
+            shimmer_max_delay - 64,
+            floor(0.08 * srate)
+        )
+    );
+
+shimmer_phase_increment =
+    1 /
+    shimmer_window_frames;
+
+output_limiter_release =
+    1 -
+    exp(
+        -1 /
+        max(
+            1,
+            0.10 * srate
+        )
+    );
+
+delay_mode != last_delay_mode ? (
+    delay_clear_index = reverb_memory_end;
+
+    loop(
+        effects_memory_end - reverb_memory_end,
+        delay_clear_index[0] = 0;
+        delay_clear_index += 1;
+    );
+
+    delay_write_pos = 0;
+    delay_l_damp = 0;
+    delay_r_damp = 0;
+    last_delay_mode = delay_mode;
+);
+
+delay_samples_l =
+    max(
+        1,
+        min(
+            delay_max_samples - 1,
+            floor(
+                delay_time_l_ms *
+                0.001 *
+                srate
+            )
+        )
+    );
+
+delay_samples_r =
+    max(
+        1,
+        min(
+            delay_max_samples - 1,
+            floor(
+                delay_time_r_ms *
+                0.001 *
+                srate
+            )
+        )
+    );
+
+delay_damping_coefficient =
+    max(
+        0.02,
+        1 -
+        delay_damping *
+        0.98
+    );
 
 // Keep a valid range even if the automation lanes cross.
 range_start = min(sample_start, sample_end);
@@ -422,6 +804,26 @@ frame_count > 1 ? (
 
         free_grain >= 0 ? (
 
+            // Give each grain an independent detune around the MIDI pitch.
+            grain_detune =
+                pitch_spread > 0 ?
+                (
+                    (rand(2) - 1) *
+                    pitch_spread
+                ) :
+                0;
+
+            grain_pitch_ratio =
+                2 ^
+                (
+                    grain_detune /
+                    12
+                );
+
+            grain_step =
+                playback_step *
+                grain_pitch_ratio;
+
             grain_frames =
                 max(
                     1,
@@ -453,13 +855,13 @@ frame_count > 1 ? (
                     max(
                         1,
                         range_source_length /
-                        max(0.000001, playback_step)
+                        max(0.000001, grain_step)
                     )
                 );
 
             grain_source_length =
                 grain_frames *
-                playback_step;
+                grain_step;
 
             range_max_start =
                 max(
@@ -521,7 +923,7 @@ frame_count > 1 ? (
                 grain_start;
 
             step_base[free_grain] =
-                playback_step;
+                grain_step;
 
             length_base[free_grain] =
                 grain_frames;
@@ -701,25 +1103,100 @@ loop(max_grains,
 
 
             // --------------------------------------
-            // HANN WINDOW
+            // ADJUSTABLE ATTACK / RELEASE ENVELOPE
             // --------------------------------------
 
-            normalized_phase =
-                grain_phase /
+            available_env_frames =
                 max(
                     1,
                     grain_length - 1
                 );
 
-
-            grain_env =
-                0.5 -
-                0.5 *
-                cos(
-                    2 *
-                    $pi *
-                    normalized_phase
+            attack_frames =
+                max(
+                    0,
+                    attack_ms *
+                    0.001 *
+                    srate
                 );
+
+            release_frames =
+                max(
+                    0,
+                    release_ms *
+                    0.001 *
+                    srate
+                );
+
+            envelope_frames =
+                attack_frames +
+                release_frames;
+
+            // Scale both stages proportionally when the grain is too short.
+            envelope_frames > available_env_frames ? (
+                envelope_scale =
+                    available_env_frames /
+                    max(
+                        0.000001,
+                        envelope_frames
+                    );
+
+                attack_frames *= envelope_scale;
+                release_frames *= envelope_scale;
+            );
+
+            grain_env = 1;
+
+            attack_frames > 0 &&
+            grain_phase < attack_frames ? (
+                attack_progress =
+                    max(
+                        0,
+                        min(
+                            1,
+                            grain_phase /
+                            attack_frames
+                        )
+                    );
+
+                grain_env =
+                    0.5 -
+                    0.5 *
+                    cos(
+                        $pi *
+                        attack_progress
+                    );
+            );
+
+            release_frames > 0 &&
+            grain_phase > available_env_frames - release_frames ? (
+                release_progress =
+                    max(
+                        0,
+                        min(
+                            1,
+                            (
+                                available_env_frames -
+                                grain_phase
+                            ) /
+                            release_frames
+                        )
+                    );
+
+                release_env =
+                    0.5 -
+                    0.5 *
+                    cos(
+                        $pi *
+                        release_progress
+                    );
+
+                grain_env =
+                    min(
+                        grain_env,
+                        release_env
+                    );
+            );
 
 
             // --------------------------------------
@@ -803,24 +1280,433 @@ out_r *= cloud_gain;
 
 
 // ==================================================
+// STEREO CLOUD REVERB
+// ==================================================
+
+reverb_mode > 0 ? (
+
+    dry_l = out_l;
+    dry_r = out_r;
+
+    reverb_input_l =
+        (
+            dry_l +
+            dry_r * 0.15 +
+            shimmer_feedback_l *
+            shimmer_amount
+        ) *
+        0.70;
+
+    reverb_input_r =
+        (
+            dry_r +
+            dry_l * 0.15 +
+            shimmer_feedback_r *
+            shimmer_amount
+        ) *
+        0.70;
+
+    read_l1 = (reverb_write_pos - delay_l1 + reverb_max_delay) % reverb_max_delay;
+    read_l2 = (reverb_write_pos - delay_l2 + reverb_max_delay) % reverb_max_delay;
+    read_l3 = (reverb_write_pos - delay_l3 + reverb_max_delay) % reverb_max_delay;
+    read_l4 = (reverb_write_pos - delay_l4 + reverb_max_delay) % reverb_max_delay;
+    read_r1 = (reverb_write_pos - delay_r1 + reverb_max_delay) % reverb_max_delay;
+    read_r2 = (reverb_write_pos - delay_r2 + reverb_max_delay) % reverb_max_delay;
+    read_r3 = (reverb_write_pos - delay_r3 + reverb_max_delay) % reverb_max_delay;
+    read_r4 = (reverb_write_pos - delay_r4 + reverb_max_delay) % reverb_max_delay;
+
+    comb_l1_out = comb_l1_base[read_l1];
+    comb_l2_out = comb_l2_base[read_l2];
+    comb_l3_out = comb_l3_base[read_l3];
+    comb_l4_out = comb_l4_base[read_l4];
+    comb_r1_out = comb_r1_base[read_r1];
+    comb_r2_out = comb_r2_base[read_r2];
+    comb_r3_out = comb_r3_base[read_r3];
+    comb_r4_out = comb_r4_base[read_r4];
+
+    comb_l1_damp += damping_coefficient * (comb_l1_out - comb_l1_damp);
+    comb_l2_damp += damping_coefficient * (comb_l2_out - comb_l2_damp);
+    comb_l3_damp += damping_coefficient * (comb_l3_out - comb_l3_damp);
+    comb_l4_damp += damping_coefficient * (comb_l4_out - comb_l4_damp);
+    comb_r1_damp += damping_coefficient * (comb_r1_out - comb_r1_damp);
+    comb_r2_damp += damping_coefficient * (comb_r2_out - comb_r2_damp);
+    comb_r3_damp += damping_coefficient * (comb_r3_out - comb_r3_damp);
+    comb_r4_damp += damping_coefficient * (comb_r4_out - comb_r4_damp);
+
+    comb_l1_base[reverb_write_pos] = reverb_input_l + comb_l1_damp * feedback_l1;
+    comb_l2_base[reverb_write_pos] = reverb_input_l + comb_l2_damp * feedback_l2;
+    comb_l3_base[reverb_write_pos] = reverb_input_l + comb_l3_damp * feedback_l3;
+    comb_l4_base[reverb_write_pos] = reverb_input_l + comb_l4_damp * feedback_l4;
+    comb_r1_base[reverb_write_pos] = reverb_input_r + comb_r1_damp * feedback_r1;
+    comb_r2_base[reverb_write_pos] = reverb_input_r + comb_r2_damp * feedback_r2;
+    comb_r3_base[reverb_write_pos] = reverb_input_r + comb_r3_damp * feedback_r3;
+    comb_r4_base[reverb_write_pos] = reverb_input_r + comb_r4_damp * feedback_r4;
+
+    wet_l =
+        (
+            comb_l1_out +
+            comb_l2_out +
+            comb_l3_out +
+            comb_l4_out
+        ) *
+        0.25;
+
+    wet_r =
+        (
+            comb_r1_out +
+            comb_r2_out +
+            comb_r3_out +
+            comb_r4_out
+        ) *
+        0.25;
+
+    reverb_write_pos =
+        (reverb_write_pos + 1) %
+        reverb_max_delay;
+
+    ap_read_l1 = (allpass_write_pos - allpass_delay_l1 + allpass_max_delay) % allpass_max_delay;
+    ap_read_l2 = (allpass_write_pos - allpass_delay_l2 + allpass_max_delay) % allpass_max_delay;
+    ap_read_r1 = (allpass_write_pos - allpass_delay_r1 + allpass_max_delay) % allpass_max_delay;
+    ap_read_r2 = (allpass_write_pos - allpass_delay_r2 + allpass_max_delay) % allpass_max_delay;
+
+    ap_l1_delayed = allpass_l1_base[ap_read_l1];
+    ap_l1_out = ap_l1_delayed - wet_l;
+    allpass_l1_base[allpass_write_pos] = wet_l + ap_l1_delayed * 0.5;
+
+    ap_l2_delayed = allpass_l2_base[ap_read_l2];
+    ap_l2_out = ap_l2_delayed - ap_l1_out;
+    allpass_l2_base[allpass_write_pos] = ap_l1_out + ap_l2_delayed * 0.5;
+
+    ap_r1_delayed = allpass_r1_base[ap_read_r1];
+    ap_r1_out = ap_r1_delayed - wet_r;
+    allpass_r1_base[allpass_write_pos] = wet_r + ap_r1_delayed * 0.5;
+
+    ap_r2_delayed = allpass_r2_base[ap_read_r2];
+    ap_r2_out = ap_r2_delayed - ap_r1_out;
+    allpass_r2_base[allpass_write_pos] = ap_r1_out + ap_r2_delayed * 0.5;
+
+    allpass_write_pos =
+        (allpass_write_pos + 1) %
+        allpass_max_delay;
+
+    // ----------------------------------------------
+    // DUAL-HEAD OCTAVE-UP SHIMMER FEEDBACK
+    // ----------------------------------------------
+
+    reverb_mode == 3 ? (
+
+        shimmer_head_1 = shimmer_phase;
+        shimmer_head_2 = (shimmer_phase + 0.5) % 1;
+
+        shimmer_delay_1 =
+            32 +
+            (1 - shimmer_head_1) *
+            (shimmer_window_frames - 64);
+
+        shimmer_delay_2 =
+            32 +
+            (1 - shimmer_head_2) *
+            (shimmer_window_frames - 64);
+
+        shimmer_read_1 =
+            shimmer_write_pos -
+            shimmer_delay_1;
+
+        shimmer_read_2 =
+            shimmer_write_pos -
+            shimmer_delay_2;
+
+        shimmer_read_1 < 0 ? shimmer_read_1 += shimmer_max_delay;
+        shimmer_read_2 < 0 ? shimmer_read_2 += shimmer_max_delay;
+
+        shimmer_index_1 = floor(shimmer_read_1);
+        shimmer_index_2 = floor(shimmer_read_2);
+        shimmer_next_1 = (shimmer_index_1 + 1) % shimmer_max_delay;
+        shimmer_next_2 = (shimmer_index_2 + 1) % shimmer_max_delay;
+        shimmer_frac_1 = shimmer_read_1 - shimmer_index_1;
+        shimmer_frac_2 = shimmer_read_2 - shimmer_index_2;
+
+        shimmer_l_head_1 =
+            shimmer_l_base[shimmer_index_1] +
+            (
+                shimmer_l_base[shimmer_next_1] -
+                shimmer_l_base[shimmer_index_1]
+            ) *
+            shimmer_frac_1;
+
+        shimmer_l_head_2 =
+            shimmer_l_base[shimmer_index_2] +
+            (
+                shimmer_l_base[shimmer_next_2] -
+                shimmer_l_base[shimmer_index_2]
+            ) *
+            shimmer_frac_2;
+
+        shimmer_r_head_1 =
+            shimmer_r_base[shimmer_index_1] +
+            (
+                shimmer_r_base[shimmer_next_1] -
+                shimmer_r_base[shimmer_index_1]
+            ) *
+            shimmer_frac_1;
+
+        shimmer_r_head_2 =
+            shimmer_r_base[shimmer_index_2] +
+            (
+                shimmer_r_base[shimmer_next_2] -
+                shimmer_r_base[shimmer_index_2]
+            ) *
+            shimmer_frac_2;
+
+        shimmer_weight_1 =
+            sin(
+                $pi *
+                shimmer_head_1
+            );
+
+        shimmer_weight_2 =
+            sin(
+                $pi *
+                shimmer_head_2
+            );
+
+        shimmer_weight_sum =
+            max(
+                0.000001,
+                shimmer_weight_1 +
+                shimmer_weight_2
+            );
+
+        shimmer_pitch_l =
+            (
+                shimmer_l_head_1 * shimmer_weight_1 +
+                shimmer_l_head_2 * shimmer_weight_2
+            ) /
+            shimmer_weight_sum;
+
+        shimmer_pitch_r =
+            (
+                shimmer_r_head_1 * shimmer_weight_1 +
+                shimmer_r_head_2 * shimmer_weight_2
+            ) /
+            shimmer_weight_sum;
+
+        shimmer_raw_l =
+            shimmer_pitch_l +
+            shimmer_pitch_r * 0.10;
+
+        shimmer_raw_r =
+            shimmer_pitch_r +
+            shimmer_pitch_l * 0.10;
+
+        // Bounded soft feedback: never exceeds +/-0.16 per channel.
+        shimmer_feedback_l =
+            shimmer_raw_l /
+            (
+                1 +
+                abs(shimmer_raw_l)
+            ) *
+            0.16;
+
+        shimmer_feedback_r =
+            shimmer_raw_r /
+            (
+                1 +
+                abs(shimmer_raw_r)
+            ) *
+            0.16;
+
+        shimmer_l_base[shimmer_write_pos] = ap_l2_out;
+        shimmer_r_base[shimmer_write_pos] = ap_r2_out;
+
+        shimmer_write_pos =
+            (shimmer_write_pos + 1) %
+            shimmer_max_delay;
+
+        shimmer_phase += shimmer_phase_increment;
+        shimmer_phase >= 1 ? shimmer_phase -= 1;
+
+    ) : (
+
+        shimmer_feedback_l = 0;
+        shimmer_feedback_r = 0;
+    );
+
+    dry_gain =
+        cos(
+            reverb_mix *
+            $pi *
+            0.5
+        );
+
+    wet_gain =
+        sin(
+            reverb_mix *
+            $pi *
+            0.5
+        );
+
+    out_l =
+        dry_l * dry_gain +
+        ap_l2_out * wet_gain;
+
+    out_r =
+        dry_r * dry_gain +
+        ap_r2_out * wet_gain;
+);
+
+
+// ==================================================
+// STEREO / PING PONG DELAY
+// ==================================================
+
+delay_mode > 0 ? (
+
+    delay_dry_l = out_l;
+    delay_dry_r = out_r;
+
+    delay_read_l =
+        (
+            delay_write_pos -
+            delay_samples_l +
+            delay_max_samples
+        ) %
+        delay_max_samples;
+
+    delay_read_r =
+        (
+            delay_write_pos -
+            delay_samples_r +
+            delay_max_samples
+        ) %
+        delay_max_samples;
+
+    delay_tap_l = delay_l_base[delay_read_l];
+    delay_tap_r = delay_r_base[delay_read_r];
+
+    delay_l_damp +=
+        delay_damping_coefficient *
+        (
+            delay_tap_l -
+            delay_l_damp
+        );
+
+    delay_r_damp +=
+        delay_damping_coefficient *
+        (
+            delay_tap_r -
+            delay_r_damp
+        );
+
+    // Stereo feeds each channel back into itself.
+    delay_mode == 1 ? (
+        delay_feedback_l =
+            delay_l_damp *
+            delay_feedback;
+
+        delay_feedback_r =
+            delay_r_damp *
+            delay_feedback;
+
+    ) : (
+
+        // Ping Pong crosses the feedback between left and right.
+        delay_feedback_l =
+            delay_r_damp *
+            delay_feedback;
+
+        delay_feedback_r =
+            delay_l_damp *
+            delay_feedback;
+    );
+
+    delay_l_base[delay_write_pos] =
+        delay_dry_l +
+        delay_feedback_l;
+
+    delay_r_base[delay_write_pos] =
+        delay_dry_r +
+        delay_feedback_r;
+
+    delay_write_pos =
+        (delay_write_pos + 1) %
+        delay_max_samples;
+
+    delay_dry_gain =
+        cos(
+            delay_mix *
+            $pi *
+            0.5
+        );
+
+    delay_wet_gain =
+        sin(
+            delay_mix *
+            $pi *
+            0.5
+        );
+
+    out_l =
+        delay_dry_l * delay_dry_gain +
+        delay_l_damp * delay_wet_gain;
+
+    out_r =
+        delay_dry_r * delay_dry_gain +
+        delay_r_damp * delay_wet_gain;
+);
+
+
+// ==================================================
 // OUTPUT
 // ==================================================
 
-spl0 =
+pre_output_l =
     out_l *
     output_gain;
 
-
-spl1 =
+pre_output_r =
     out_r *
     output_gain;
+
+output_peak =
+    max(
+        abs(pre_output_l),
+        abs(pre_output_r)
+    );
+
+limiter_target =
+    output_peak > 0.98 ?
+    0.98 /
+    output_peak :
+    1;
+
+limiter_target < output_limiter_gain ? (
+    // Instant attack catches feedback spikes before they reach the output.
+    output_limiter_gain = limiter_target;
+) : (
+    // Smooth 100 ms recovery avoids abrupt volume pumping.
+    output_limiter_gain +=
+        (
+            1 -
+            output_limiter_gain
+        ) *
+        output_limiter_release;
+);
+
+spl0 =
+    pre_output_l *
+    output_limiter_gain;
+
+spl1 =
+    pre_output_r *
+    output_limiter_gain;
 
 
 // ==================================================
 // GUI
 // ==================================================
 
-@gfx 800 800
+@gfx 800 1180
 
 
 // --------------------------------------------------
@@ -876,7 +1762,7 @@ gfx_x = 30;
 gfx_y = 65;
 
 gfx_drawstr(
-    "v0.17  SAMPLE RANGE"
+    "v0.23  STEREO DELAY"
 );
 
 
@@ -1475,12 +2361,137 @@ gfx_drawnumber(range_end * 100, 1);
 gfx_drawstr("%");
 
 
+gfx_x = 30;
+gfx_y = 690;
+
+gfx_drawstr("Pitch spread: ");
+gfx_drawnumber(pitch_spread, 1);
+gfx_drawstr(" semitones");
+
+
+gfx_x = 30;
+gfx_y = 715;
+
+gfx_drawstr("Attack: ");
+gfx_drawnumber(attack_ms, 0);
+gfx_drawstr(" ms");
+
+
+gfx_x = 30;
+gfx_y = 740;
+
+gfx_drawstr("Release: ");
+gfx_drawnumber(release_ms, 0);
+gfx_drawstr(" ms");
+
+
+gfx_x = 30;
+gfx_y = 775;
+
+gfx_drawstr("Reverb: ");
+
+reverb_mode == 0 ? gfx_drawstr("OFF");
+reverb_mode == 1 ? gfx_drawstr("ROOM");
+reverb_mode == 2 ? gfx_drawstr("HALL");
+reverb_mode == 3 ? gfx_drawstr("SHIMMER");
+
+
+gfx_x = 30;
+gfx_y = 800;
+
+gfx_drawstr("Reverb mix: ");
+gfx_drawnumber(reverb_mix * 100, 1);
+gfx_drawstr("%");
+
+
+gfx_x = 30;
+gfx_y = 825;
+
+gfx_drawstr("Reverb size: ");
+gfx_drawnumber(reverb_size * 100, 1);
+gfx_drawstr("%");
+
+
+gfx_x = 30;
+gfx_y = 850;
+
+gfx_drawstr("Reverb decay: ");
+gfx_drawnumber(reverb_decay, 1);
+gfx_drawstr(" s");
+
+
+gfx_x = 30;
+gfx_y = 875;
+
+gfx_drawstr("Reverb damping: ");
+gfx_drawnumber(reverb_damping * 100, 1);
+gfx_drawstr("%");
+
+
+gfx_x = 30;
+gfx_y = 900;
+
+gfx_drawstr("Shimmer amount: ");
+gfx_drawnumber(shimmer_amount * 100, 1);
+gfx_drawstr("%");
+
+
+gfx_x = 30;
+gfx_y = 925;
+
+gfx_drawstr("Delay: ");
+
+delay_mode == 0 ? gfx_drawstr("OFF");
+delay_mode == 1 ? gfx_drawstr("STEREO");
+delay_mode == 2 ? gfx_drawstr("PING PONG");
+
+
+gfx_x = 30;
+gfx_y = 950;
+
+gfx_drawstr("Delay time L: ");
+gfx_drawnumber(delay_time_l_ms, 0);
+gfx_drawstr(" ms");
+
+
+gfx_x = 30;
+gfx_y = 975;
+
+gfx_drawstr("Delay time R: ");
+gfx_drawnumber(delay_time_r_ms, 0);
+gfx_drawstr(" ms");
+
+
+gfx_x = 30;
+gfx_y = 1000;
+
+gfx_drawstr("Delay feedback: ");
+gfx_drawnumber(delay_feedback * 100, 1);
+gfx_drawstr("%");
+
+
+gfx_x = 30;
+gfx_y = 1025;
+
+gfx_drawstr("Delay mix: ");
+gfx_drawnumber(delay_mix * 100, 1);
+gfx_drawstr("%");
+
+
+gfx_x = 30;
+gfx_y = 1050;
+
+gfx_drawstr("Delay damping: ");
+gfx_drawnumber(delay_damping * 100, 1);
+gfx_drawstr("%");
+
+
 // ==================================================
 // STATUS
 // ==================================================
 
 gfx_x = 30;
-gfx_y = 720;
+gfx_y = 1100;
 
 note_held ? (
 

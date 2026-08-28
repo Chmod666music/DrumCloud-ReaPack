@@ -2,8 +2,8 @@
 
 DrumCloud JS is a granular sample instrument for REAPER.
 
-This repository is a ReaPack repository. Installing the package installs both
-the JSFX instrument and its CC0 factory samples.
+This repository is a ReaPack repository. Installing the package installs the
+JSFX instrument, its CC0 factory samples, and a 46-preset factory bank.
 
 ## Install with ReaPack
 
@@ -16,6 +16,15 @@ the JSFX instrument and its CC0 factory samples.
 4. Find and install **DrumCloud JS**.
 5. Add `JS: DrumCloud JS` to a track and send it MIDI.
 
+### Install the factory presets
+
+1. Open **Actions → Show action list** after installing DrumCloud JS.
+2. Search for **Install DrumCloud Factory Presets** and run the action once.
+3. Close and reopen DrumCloud JS to refresh its preset list.
+
+If a DrumCloud preset bank already exists, the installer creates a timestamped
+backup before installing the factory bank.
+
 ReaPack installs the instrument in `Effects/DrumCloud` and the samples in
 `Data/DrumCloud` inside the REAPER resource directory.
 
@@ -27,18 +36,21 @@ ReaPack installs the instrument in `Effects/DrumCloud` and the samples in
 - Animated grain markers
 - Sample Start and Sample End range controls
 - Forward, Backward, Ping Pong, Random Jump and Random Walk movement
+- Per-grain pitch spread plus adjustable attack and release envelopes
+- Stereo Room, Hall and Shimmer cloud reverb
+- Filtered Stereo and Ping Pong delay
+- Transparent output peak protection
+- 46 factory presets made for v0.23
 
 ## Samples
 
-The factory samples were created by
-[MarkAllentheProducer](https://freesound.org/people/MarkAllentheProducer/)
-and downloaded from the
-[Beats pack on Freesound](https://freesound.org/people/MarkAllentheProducer/packs/40791/).
-They are distributed under CC0 1.0. Detailed source links are installed in
-`Data/DrumCloud/SAMPLE_LICENSES.txt`.
+All 130 factory samples were created by
+[REVERBERA](https://freesound.org/people/REVERBERA/) and come from the
+[Reverbera som pack on Freesound](https://freesound.org/people/REVERBERA/packs/45512/).
+They are distributed under CC0 1.0. Detailed source and license information is
+installed in `Data/DrumCloud/SAMPLE_CREDITS_AND_LICENSE.txt`.
 
 ## Licenses
 
 - DrumCloud JS source code: [MIT](LICENSE)
 - Factory samples: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
-
