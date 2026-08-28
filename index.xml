@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="DrumCloud ReaPack" commit="bc70a05053f88544d2b82fda05f2f1e54525db5d">
+<index version="1" name="DrumCloud-ReaPack" commit="bc70a05053f88544d2b82fda05f2f1e54525db5d">
   <category name="Effects/DrumCloud">
     <reapack name="DrumCloud_JS.jsfx" type="effect" desc="DrumCloud JS">
       <metadata>
