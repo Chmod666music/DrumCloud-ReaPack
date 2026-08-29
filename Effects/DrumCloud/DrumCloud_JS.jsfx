@@ -1,7 +1,11 @@
 desc: DrumCloud JS
-version: 0.24.1
+version: 0.24.2
 author: Chmod666music
 changelog:
+  Fix intermittent out-of-range grain starts and boundary clicks.
+  Validate and commit shared grain slots atomically before activation.
+  Isolate audio, MIDI, initialization, loading, and GUI loop indices.
+  Add interpolation-safe range traversal and graceful invalid-grain retirement.
   Add optional filename-based Auto Root mapping for tonal factory samples.
   Leave beats, noise, percussion, whisper, and unstable samples unmapped.
   Keep active grains inside the selected Sample Start and Sample End range.
@@ -194,7 +198,12 @@ slider29:auto_root=0<0,1,1{Off,On}>Auto Root
 
 @init
 
-version = 0.2401;
+version = 0.2402;
+
+function valid_number(value)
+(
+    value == value && abs(value) < 100000000000000000000;
+);
 
 
 // ==================================================
@@ -338,6 +347,9 @@ step_base      = 96;
 length_base    = 128;
 velocity_base  = 160;
 pan_base       = 192;
+retire_base    = 320;
+last_l_base    = 352;
+last_r_base    = 384;
 
 // Eight MIDI voices share the grain pool. A voice owns only note state and
 // a scheduler; spawned grains retain their own pitch/velocity until finished.
@@ -463,32 +475,35 @@ active_grains = 0;
 // INITIAL CLEAR
 // ==================================================
 
-i = 0;
+init_grain_i = 0;
 
 loop(max_grains,
 
-    active_base[i] = 0;
-    phase_base[i] = 0;
-    start_base[i] = 0;
-    step_base[i] = 1;
-    length_base[i] = 1;
-    velocity_base[i] = 0;
-    pan_base[i] = 0;
+    active_base[init_grain_i] = 0;
+    phase_base[init_grain_i] = 0;
+    start_base[init_grain_i] = 0;
+    step_base[init_grain_i] = 1;
+    length_base[init_grain_i] = 1;
+    velocity_base[init_grain_i] = 0;
+    pan_base[init_grain_i] = 0;
+    retire_base[init_grain_i] = 0;
+    last_l_base[init_grain_i] = 0;
+    last_r_base[init_grain_i] = 0;
 
-    i += 1;
+    init_grain_i += 1;
 );
 
-i = 0;
+init_voice_i = 0;
 
 loop(max_voices,
-    voice_active_base[i] = 0;
-    voice_note_base[i] = -1;
-    voice_velocity_base[i] = 0;
-    voice_step_base[i] = 1;
-    voice_spawn_base[i] = 0;
-    voice_age_base[i] = 0;
-    voice_channel_base[i] = 0;
-    i += 1;
+    voice_active_base[init_voice_i] = 0;
+    voice_note_base[init_voice_i] = -1;
+    voice_velocity_base[init_voice_i] = 0;
+    voice_step_base[init_voice_i] = 1;
+    voice_spawn_base[init_voice_i] = 0;
+    voice_age_base[init_voice_i] = 0;
+    voice_channel_base[init_voice_i] = 0;
+    init_voice_i += 1;
 );
 
 
@@ -778,26 +793,29 @@ slider1 != last_sample ? (
 
 
         // Stop existing grains
-        i = 0;
+        load_grain_i = 0;
 
         loop(max_grains,
 
-            active_base[i] = 0;
+            active_base[load_grain_i] = 0;
+            retire_base[load_grain_i] = 0;
+            last_l_base[load_grain_i] = 0;
+            last_r_base[load_grain_i] = 0;
 
-            i += 1;
+            load_grain_i += 1;
         );
 
         active_grains = 0;
 
         // A newly loaded sample starts from a clean MIDI state.
-        i = 0;
+        load_voice_i = 0;
         loop(max_voices,
-            voice_active_base[i] = 0;
-            voice_note_base[i] = -1;
-            voice_velocity_base[i] = 0;
-            voice_spawn_base[i] = 0;
-            voice_channel_base[i] = 0;
-            i += 1;
+            voice_active_base[load_voice_i] = 0;
+            voice_note_base[load_voice_i] = -1;
+            voice_velocity_base[load_voice_i] = 0;
+            voice_spawn_base[load_voice_i] = 0;
+            voice_channel_base[load_voice_i] = 0;
+            load_voice_i += 1;
         );
         active_voices = 0;
         current_note = -1;
@@ -844,17 +862,17 @@ while (
             chosen_voice = -1;
             oldest_voice = 0;
             oldest_age = voice_age_base[0];
-            i = 0;
+            midi_alloc_i = 0;
 
             loop(max_voices,
-                chosen_voice < 0 && !voice_active_base[i] ? (
-                    chosen_voice = i;
+                chosen_voice < 0 && !voice_active_base[midi_alloc_i] ? (
+                    chosen_voice = midi_alloc_i;
                 );
-                voice_age_base[i] < oldest_age ? (
-                    oldest_age = voice_age_base[i];
-                    oldest_voice = i;
+                voice_age_base[midi_alloc_i] < oldest_age ? (
+                    oldest_age = voice_age_base[midi_alloc_i];
+                    oldest_voice = midi_alloc_i;
                 );
-                i += 1;
+                midi_alloc_i += 1;
             );
 
             chosen_voice < 0 ? chosen_voice = oldest_voice;
@@ -892,17 +910,17 @@ while (
             // and channel. Every unrelated held note remains active.
             release_voice = -1;
             release_age = voice_age_counter + 1;
-            i = 0;
+            midi_release_i = 0;
 
             loop(max_voices,
-                voice_active_base[i] &&
-                voice_note_base[i] == note &&
-                voice_channel_base[i] == midi_channel &&
-                voice_age_base[i] < release_age ? (
-                    release_voice = i;
-                    release_age = voice_age_base[i];
+                voice_active_base[midi_release_i] &&
+                voice_note_base[midi_release_i] == note &&
+                voice_channel_base[midi_release_i] == midi_channel &&
+                voice_age_base[midi_release_i] < release_age ? (
+                    release_voice = midi_release_i;
+                    release_age = voice_age_base[midi_release_i];
                 );
-                i += 1;
+                midi_release_i += 1;
             );
 
             release_voice >= 0 ? (
@@ -911,17 +929,17 @@ while (
 
                 current_note = -1;
                 newest_age = -1;
-                i = 0;
+                midi_newest_i = 0;
                 loop(max_voices,
-                    voice_active_base[i] &&
-                    voice_age_base[i] > newest_age ? (
-                        newest_age = voice_age_base[i];
-                        current_note = voice_note_base[i];
+                    voice_active_base[midi_newest_i] &&
+                    voice_age_base[midi_newest_i] > newest_age ? (
+                        newest_age = voice_age_base[midi_newest_i];
+                        current_note = voice_note_base[midi_newest_i];
                         pitch_ratio =
-                            voice_step_base[i] /
+                            voice_step_base[midi_newest_i] /
                             max(0.000001, sample_samplerate / srate);
                     );
-                    i += 1;
+                    midi_newest_i += 1;
                 );
             );
         );
@@ -930,14 +948,14 @@ while (
         // addressed channel; already spawned grains finish their envelopes.
         status == $xB0 &&
         (note == 120 || note == 123) ? (
-            i = 0;
+            midi_alloff_i = 0;
             loop(max_voices,
-                voice_active_base[i] &&
-                voice_channel_base[i] == midi_channel ? (
-                    voice_active_base[i] = 0;
-                    voice_velocity_base[i] = 0;
+                voice_active_base[midi_alloff_i] &&
+                voice_channel_base[midi_alloff_i] == midi_channel ? (
+                    voice_active_base[midi_alloff_i] = 0;
+                    voice_velocity_base[midi_alloff_i] = 0;
                 );
-                i += 1;
+                midi_alloff_i += 1;
             );
         );
 
@@ -1064,18 +1082,18 @@ frame_count > 1 ? (
 
         free_grain = -1;
 
-        i = 0;
+        spawn_search_i = 0;
 
 
         loop(max_grains,
 
             free_grain < 0 &&
-            active_base[i] == 0 ? (
+            active_base[spawn_search_i] == 0 ? (
 
-                free_grain = i;
+                free_grain = spawn_search_i;
             );
 
-            i += 1;
+            spawn_search_i += 1;
         );
 
 
@@ -1105,13 +1123,7 @@ frame_count > 1 ? (
                 voice_step_base[voice_index] *
                 grain_pitch_ratio;
 
-            grain_frames =
-                max(
-                    1,
-                    grain_size_ms *
-                    0.001 *
-                    srate
-                );
+            grain_frames = floor(max(1, grain_size_ms * 0.001 * srate));
 
             range_start_frame =
                 range_start *
@@ -1121,35 +1133,30 @@ frame_count > 1 ? (
                 range_end *
                 (frame_count - 1);
 
-            range_source_length =
-                max(
-                    1,
-                    range_end_frame -
-                    range_start_frame -
-                    2
-                );
+            // Reserve the following frame for interpolation. Using integer
+            // read limits prevents interpolation from crossing either range
+            // boundary even when the sliders resolve to fractional frames.
+            safe_start_frame = ceil(range_start_frame);
+            safe_end_frame = floor(range_end_frame) - 1;
+
+            safe_source_length =
+                safe_end_frame - safe_start_frame;
 
             // Short ranges shorten grains so playback stays in range.
-            grain_frames =
-                min(
-                    grain_frames,
-                    max(
-                        1,
-                        range_source_length /
-                        max(0.000001, grain_step)
-                    )
-                );
+            max_grain_frames =
+                floor(
+                    safe_source_length /
+                    max(0.000001, grain_step)
+                ) + 1;
+
+            grain_frames = min(grain_frames, max_grain_frames);
 
             grain_source_length =
-                grain_frames *
+                max(0, grain_frames - 1) *
                 grain_step;
 
             range_max_start =
-                max(
-                    range_start_frame,
-                    range_end_frame -
-                    grain_source_length
-                );
+                safe_end_frame - grain_source_length;
 
 
         // --------------------------------------
@@ -1180,9 +1187,13 @@ frame_count > 1 ? (
             max(0.001, range_end - range_start);
 
         grain_start =
-            range_start_frame +
+            safe_start_frame +
             range_position *
-            (range_max_start - range_start_frame);
+            (range_max_start - safe_start_frame);
+
+            grain_final_source =
+                grain_start +
+                max(0, grain_frames - 1) * grain_step;
 
 
             // RANDOM PAN
@@ -1194,26 +1205,36 @@ frame_count > 1 ? (
                 stereo_spread;
 
 
-            active_base[free_grain] =
-                1;
+            // Validate every derived value before touching the shared slot.
+            // Activation is the final atomic commit, so @gfx and @sample can
+            // never observe a partially initialized grain.
+            grain_valid =
+                safe_end_frame >= safe_start_frame &&
+                valid_number(grain_start) &&
+                valid_number(grain_step) &&
+                valid_number(grain_frames) &&
+                valid_number(grain_final_source) &&
+                grain_step > 0 &&
+                grain_frames >= 1 &&
+                grain_start >= safe_start_frame &&
+                grain_start <= safe_end_frame &&
+                grain_final_source >= grain_start &&
+                grain_final_source <= safe_end_frame &&
+                safe_start_frame >= 0 &&
+                safe_end_frame + 1 < frame_count;
 
-            phase_base[free_grain] =
-                0;
-
-            start_base[free_grain] =
-                grain_start;
-
-            step_base[free_grain] =
-                grain_step;
-
-            length_base[free_grain] =
-                grain_frames;
-
-            velocity_base[free_grain] =
-                voice_velocity_base[voice_index];
-
-            pan_base[free_grain] =
-                grain_pan;
+            grain_valid ? (
+                phase_base[free_grain] = 0;
+                start_base[free_grain] = grain_start;
+                step_base[free_grain] = grain_step;
+                length_base[free_grain] = grain_frames;
+                velocity_base[free_grain] = voice_velocity_base[voice_index];
+                pan_base[free_grain] = grain_pan;
+                retire_base[free_grain] = 0;
+                last_l_base[free_grain] = 0;
+                last_r_base[free_grain] = 0;
+                active_base[free_grain] = 1;
+            );
         );
 
 
@@ -1221,12 +1242,15 @@ frame_count > 1 ? (
         // NEXT GRAIN
         // ------------------------------------------
 
-        voice_spawn_base[voice_index] =
-            srate /
-            max(
-                0.1,
-                density
-            );
+        // A full pool retries on the next sample; no slot or scheduler state
+        // is partially consumed. Invalid range/math waits one normal interval.
+        free_grain < 0 ? (
+            voice_spawn_base[voice_index] = 1;
+        ) : (
+            voice_spawn_base[voice_index] =
+                srate /
+                max(0.1, density);
+        );
     );
 
 
@@ -1243,28 +1267,28 @@ voice_index += 1;
 
 active_grains = 0;
 
-i = 0;
+audio_grain_i = 0;
 
 
 loop(max_grains,
 
-    active_base[i] ? (
+    active_base[audio_grain_i] ? (
 
         grain_phase =
-            phase_base[i];
+            phase_base[audio_grain_i];
 
         grain_length =
-            length_base[i];
+            length_base[audio_grain_i];
 
         grain_step =
-            step_base[i];
+            step_base[audio_grain_i];
 
         grain_pan =
-            pan_base[i];
+            pan_base[audio_grain_i];
 
 
         source_pos =
-            start_base[i] +
+            start_base[audio_grain_i] +
             grain_phase *
             grain_step;
 
@@ -1296,8 +1320,14 @@ loop(max_grains,
         )
         &&
         (
-            source_pos <
-            current_range_end_frame
+            source_pos + 1 <=
+            floor(current_range_end_frame)
+        )
+        &&
+        (
+            valid_number(source_pos) &&
+            valid_number(grain_step) &&
+            grain_step > 0
         ) ? (
 
 
@@ -1529,7 +1559,7 @@ loop(max_grains,
 
             grain_gain =
                 grain_env *
-                velocity_base[i];
+                velocity_base[audio_grain_i];
 
 
             grain_l *=
@@ -1549,19 +1579,45 @@ loop(max_grains,
             out_l += grain_l;
             out_r += grain_r;
 
+            last_l_base[audio_grain_i] = grain_l;
+            last_r_base[audio_grain_i] = grain_r;
+            retire_base[audio_grain_i] = 0;
 
-            phase_base[i] += 1;
+
+            phase_base[audio_grain_i] += 1;
 
             active_grains += 1;
 
         ) : (
 
-            active_base[i] = 0;
+            // Normal completion already reaches the configured release
+            // envelope. Unexpected invalidation gets a tiny cached-sample
+            // fade, preventing a discontinuity without any unsafe read.
+            grain_phase >= grain_length ? (
+                active_base[audio_grain_i] = 0;
+                retire_base[audio_grain_i] = 0;
+            ) : (
+                retire_base[audio_grain_i] <= 0 ? (
+                    retire_base[audio_grain_i] = 32;
+                );
+
+                retire_gain = retire_base[audio_grain_i] / 32;
+                out_l += last_l_base[audio_grain_i] * retire_gain;
+                out_r += last_r_base[audio_grain_i] * retire_gain;
+                retire_base[audio_grain_i] -= 1;
+                active_grains += 1;
+
+                retire_base[audio_grain_i] <= 0 ? (
+                    active_base[audio_grain_i] = 0;
+                    last_l_base[audio_grain_i] = 0;
+                    last_r_base[audio_grain_i] = 0;
+                );
+            );
         );
     );
 
 
-    i += 1;
+    audio_grain_i += 1;
 );
 
 
@@ -2066,7 +2122,7 @@ gfx_x = 30;
 gfx_y = 65;
 
 gfx_drawstr(
-    "v0.24.1  AUTO ROOT + 8-VOICE POLYPHONY"
+    "v0.24.2  GRAIN STABILITY + 8-VOICE POLYPHONY"
 );
 
 
@@ -2293,18 +2349,24 @@ gfx_line(range_end_x, wave_y, range_end_x, wave_y + wave_h);
 
 frame_count > 1 ? (
 
-    i = 0;
+    gfx_grain_i = 0;
 
     loop(
         max_grains,
 
-        active_base[i] ? (
+        active_base[gfx_grain_i] &&
+        retire_base[gfx_grain_i] <= 0 &&
+        valid_number(start_base[gfx_grain_i]) &&
+        valid_number(phase_base[gfx_grain_i]) &&
+        valid_number(step_base[gfx_grain_i]) &&
+        valid_number(length_base[gfx_grain_i]) &&
+        length_base[gfx_grain_i] >= 1 ? (
 
             // Current source position of this grain
             grain_current_pos =
-                start_base[i] +
-                phase_base[i] *
-                step_base[i];
+                start_base[gfx_grain_i] +
+                phase_base[gfx_grain_i] *
+                step_base[gfx_grain_i];
 
             grain_marker_pos =
                 grain_current_pos /
@@ -2330,10 +2392,10 @@ frame_count > 1 ? (
             // --------------------------------------
 
             grain_progress =
-                phase_base[i] /
+                phase_base[gfx_grain_i] /
                 max(
                     1,
-                    length_base[i]
+                    length_base[gfx_grain_i]
                 );
 
             grain_progress =
@@ -2388,7 +2450,7 @@ frame_count > 1 ? (
         );
 
 
-        i += 1;
+        gfx_grain_i += 1;
     );
 );
 
