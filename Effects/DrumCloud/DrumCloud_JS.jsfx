@@ -1,7 +1,10 @@
 desc: DrumCloud JS
-version: 0.25
+version: 0.26
 author: Chmod666music
 changelog:
+  Add Sample Fine Tune and explicit detected-root/tuning apply actions.
+  Refine multi-region pitch estimates with fractional-lag cents readout.
+  Add user-sample folder groundwork and portable development installation.
   Add per-grain Forward, Backward, Alternate, and Random playback direction.
   Add bounded Density Spread timing while preserving the legacy zero-spread rate.
   Add user-triggered multi-region normalized-autocorrelation root detection.
@@ -165,6 +168,7 @@ provides:
   [data] Samples/SAMPLE_CREDITS_AND_LICENSE.md > DrumCloud/SAMPLE_CREDITS_AND_LICENSE.md
   [data] Samples/FREESOUND_ORIGINAL_README_AND_LICENSE.md > DrumCloud/FREESOUND_ORIGINAL_README_AND_LICENSE.md
   [data] Presets/DrumCloud_v0.23_46_Factory_Presets.ini > DrumCloud/DrumCloud_v0.23_46_Factory_Presets.ini
+  [data] User Samples/README.md > DrumCloud/User Samples/README.md
   [script main] Presets/Install_DrumCloud_Factory_Presets.lua > DrumCloud/Install_DrumCloud_Factory_Presets.lua
 
 tags:instrument sampler granular
@@ -202,10 +206,12 @@ slider29:auto_root=0<0,1,1{Off,On}>Auto Root
 slider30:grain_direction=0<0,3,1{Forward,Backward,Alternate,Random}>Grain Playback Direction
 slider31:density_spread=0<0,1,0.001>Density Spread
 slider32:detect_root=0<0,1,1{Idle,Analyze}>Detect Root
+slider33:fine_tune=0<-100,100,0.1>Sample Fine Tune (cents)
+slider34:apply_tuning=0<0,2,1{Idle,Apply Root Only,Apply Root + Tune}>Apply Detected Tuning
 
 @init
 
-version = 0.25;
+version = 0.26;
 
 function valid_number(value)
 (
@@ -224,94 +230,82 @@ local(index)
     );
 );
 
-// A bounded, one-shot normalized autocorrelation analysis. Three separated
-// regions must broadly agree, which rejects drums, noise, and unstable audio
-// much more reliably than a zero-crossing estimate.
+// Mean-subtracted normalized autocorrelation, shared by search and refinement.
+function root_correlation(start, count, lag)
+local(i, a, b, sa, sb, cross, ea, eb)
+(
+    i = sa = sb = cross = ea = eb = 0;
+    loop(count,
+        a = mono_sample_at(start + i);
+        b = mono_sample_at(start + i + lag);
+        sa += a; sb += b; cross += a*b; ea += a*a; eb += b*b;
+        i += 1;
+    );
+    cross -= sa*sb/count;
+    ea = max(0, ea-sa*sa/count);
+    eb = max(0, eb-sb*sb/count);
+    cross / max(0.000000000001, sqrt(ea*eb));
+);
+
+// Analyze only on explicit request; never modify playback parameters here.
+// Prefer the earliest near-best local peak to avoid choosing integer multiples
+// of the fundamental period. Interpolate that peak before converting to cents.
 function analyze_loaded_root()
 local(region_i, region_center, region_start, window_frames, min_lag, max_lag,
-      lag, sample_i, a, b, sum_a, sum_b, cross, energy_a, energy_b, score, best_score,
-      best_lag, region_midi, midi_sum, score_sum, valid_regions,
-      first_midi, agreement, analyzed_frequency)
+      lag, score, best_score, best_lag, region_midi, midi_sum, score_sum,
+      valid_regions, low_midi, high_midi, left, middle, right, denominator,
+      fractional_lag, offset, mean_midi)
 (
     detected_root_note = -1;
-    detected_confidence = 0;
-    analysis_status = 2; // low confidence unless the checks below pass
-
+    detected_cents = detected_confidence = 0;
+    analysis_status = 2;
     frame_count > 4096 && sample_samplerate > 0 ? (
         window_frames = min(3072, floor(frame_count * 0.16));
         min_lag = max(8, floor(sample_samplerate / 1000));
         max_lag = min(floor(sample_samplerate / 45), window_frames - 16);
-        midi_sum = 0;
-        score_sum = 0;
-        valid_regions = 0;
-        first_midi = -1000;
-        agreement = 1;
-        region_i = 0;
-
+        midi_sum = score_sum = valid_regions = region_i = 0;
+        low_midi = 1000; high_midi = -1000;
         loop(3,
             region_center = (0.25 + region_i * 0.25) * (frame_count - 1);
-            region_start = floor(max(0, min(frame_count - window_frames - max_lag - 2,
-                                             region_center - window_frames * 0.5)));
-            best_score = -1;
-            best_lag = 0;
-            lag = min_lag;
-
-            loop(max(0, max_lag - min_lag + 1),
-                cross = 0;
-                energy_a = 0;
-                energy_b = 0;
-                sum_a = 0;
-                sum_b = 0;
-                sample_i = 0;
-                loop(window_frames,
-                    a = mono_sample_at(region_start + sample_i);
-                    b = mono_sample_at(region_start + sample_i + lag);
-                    sum_a += a;
-                    sum_b += b;
-                    cross += a * b;
-                    energy_a += a * a;
-                    energy_b += b * b;
-                    sample_i += 1;
+            region_start = floor(max(0, min(frame_count-window_frames-max_lag-2,
+                                            region_center-window_frames*0.5)));
+            best_score = -1; best_lag = 0;
+            left = root_correlation(region_start, window_frames, min_lag);
+            middle = root_correlation(region_start, window_frames, min_lag+1);
+            lag = min_lag+2;
+            loop(max(0, max_lag-min_lag-1),
+                right = root_correlation(region_start, window_frames, lag);
+                middle > left && middle >= right && middle > best_score+0.01 ? (
+                    best_score = middle; best_lag = lag-1;
                 );
-                cross -= sum_a * sum_b / window_frames;
-                energy_a -= sum_a * sum_a / window_frames;
-                energy_b -= sum_b * sum_b / window_frames;
-                score = cross / max(0.000000000001, sqrt(energy_a * energy_b));
-                score > best_score ? (
-                    best_score = score;
-                    best_lag = lag;
-                );
-                lag += 1;
+                left = middle; middle = right; lag += 1;
             );
-
             best_lag > 0 && best_score > 0.45 ? (
-                analyzed_frequency = sample_samplerate / best_lag;
-                region_midi = 69 + 12 * log(analyzed_frequency / 440) / log(2);
-                first_midi < -100 ? first_midi = region_midi;
-                abs(region_midi - first_midi) > 1.25 ? agreement = 0;
-                midi_sum += region_midi;
-                score_sum += best_score;
-                valid_regions += 1;
+                left = root_correlation(region_start, window_frames, best_lag-1);
+                middle = root_correlation(region_start, window_frames, best_lag);
+                right = root_correlation(region_start, window_frames, best_lag+1);
+                denominator = left-2*middle+right;
+                offset = abs(denominator) > 0.000000000001 ?
+                    max(-0.5, min(0.5, 0.5*(left-right)/denominator)) : 0;
+                fractional_lag = best_lag+offset;
+                region_midi = 69+12*log(sample_samplerate/fractional_lag/440)/log(2);
+                low_midi = min(low_midi, region_midi);
+                high_midi = max(high_midi, region_midi);
+                midi_sum += region_midi; score_sum += best_score; valid_regions += 1;
             );
             region_i += 1;
         );
-
         valid_regions == 3 ? (
-            detected_confidence = max(0, min(1, score_sum / 3));
-            detected_root_note = floor(midi_sum / 3 + 0.5);
-            detected_root_note = max(0, min(127, detected_root_note));
-            detected_confidence >= 0.72 && agreement ? (
-                root_note = detected_root_note;
-                manual_root_note = root_note;
-                slider_automate(root_note);
-                analysis_status = 1; // reliable and applied
-            ) : (
-                analysis_status = 2; // result shown, manual root preserved
-            );
+            mean_midi = midi_sum/3;
+            detected_confidence = max(0, min(1, score_sum/3));
+            detected_root_note = floor(mean_midi+0.5);
+            detected_cents = (mean_midi-detected_root_note)*100;
+            // Cents application needs closer agreement than the old 1.25 semitones.
+            detected_confidence >= 0.72 && high_midi-low_midi <= 0.30 &&
+            detected_root_note >= 0 && detected_root_note <= 127 ? analysis_status = 1;
         );
     );
 );
-
 
 // ==================================================
 // FACTORY SAMPLE ROOT MAP
@@ -559,9 +553,13 @@ last_position_mode = 2;
 last_scan_on = 0;
 
 last_sample = -1;
+sample_load_ok = 0;
 last_auto_root = 0;
 manual_root_note = root_note;
+detect_root = apply_tuning = 0; // commands are never restored/armed on initialization
 last_detect_root = 0;
+last_apply_tuning = 0;
+detected_cents = 0;
 detected_root_note = -1;
 detected_confidence = 0;
 analysis_status = 0;
@@ -871,6 +869,11 @@ last_scan_on = scan_on;
 
 slider1 != last_sample ? (
 
+    // Invalidate stale analysis even when loading fails.
+    analysis_status = 0;
+    detected_root_note = -1;
+    detected_cents = detected_confidence = 0;
+    sample_load_ok = 0;
     handle = file_open(slider1);
 
     handle >= 0 ? (
@@ -903,6 +906,8 @@ slider1 != last_sample ? (
                 sample_channels;
         );
 
+
+        sample_load_ok = frame_count > 0 && sample_samplerate > 0;
 
         // Stop existing grains
         load_grain_i = 0;
@@ -942,9 +947,28 @@ slider1 != last_sample ? (
 // Analyze only on the rising edge, after a newly selected file has loaded.
 detect_root && !last_detect_root ? (
     analysis_status = 3;
-    analyze_loaded_root();
+    sample_load_ok ? analyze_loaded_root() : analysis_status = 2;
 );
+// Momentary commands cannot remain armed in newly saved states.
+detect_root = 0;
+sliderchange(slider32);
 last_detect_root = detect_root;
+apply_tuning && !last_apply_tuning ? (
+    (analysis_status == 1 || analysis_status == 4) ? (
+        root_note = detected_root_note;
+        manual_root_note = root_note;
+        slider_automate(slider2);
+        apply_tuning == 2 ? (
+            // Measured source offset and playback correction have opposite signs.
+            fine_tune = -detected_cents;
+            slider_automate(slider33);
+        );
+        analysis_status = 4;
+    );
+);
+apply_tuning = 0;
+sliderchange(slider34);
+last_apply_tuning = apply_tuning;
 
 last_auto_root = auto_root;
 
@@ -1237,7 +1261,7 @@ frame_count > 1 ? (
             grain_pitch_ratio =
                 2 ^
                 (
-                    grain_detune /
+                    (grain_detune + fine_tune / 100) /
                     12
                 );
 
@@ -2272,7 +2296,22 @@ gfx_x = 30;
 gfx_y = 65;
 
 gfx_drawstr(
-    "v0.25  CREATIVE GRAIN CONTROL"
+    "v0.26  SAMPLE TUNING"
+);
+gfx_x = 30; gfx_y = 85;
+// Keep detector feedback above the waveform: the lower panel may be off-screen.
+analysis_status == 0 ? gfx_drawstr("Detect Root: choose Analyze, then Apply Root + Tune when READY.");
+analysis_status == 3 ? gfx_drawstr("Detect Root: ANALYZING...");
+analysis_status == 2 ? gfx_drawstr("Detect Root: no reliable root. Manual Root and Fine Tune kept.");
+(analysis_status == 1 || analysis_status == 4) ? (
+    strcpy(#header_note_names, "C C#D D#E F F#G G#A A#B ");
+    strcpy_substr(#header_note, #header_note_names, (detected_root_note % 12)*2, 2);
+    gfx_drawstr("Detected: "); gfx_drawstr(#header_note);
+    gfx_drawnumber(floor(detected_root_note/12)-1, 0);
+    gfx_drawstr(" | "); gfx_drawnumber(detected_cents, 1); gfx_drawstr(" cents | ");
+    gfx_drawnumber(detected_confidence*100, 0); gfx_drawstr("% | ");
+    analysis_status == 1 ? gfx_drawstr("READY: use Apply Root + Tune");
+    analysis_status == 4 ? gfx_drawstr("APPLIED (manual override available)");
 );
 
 
@@ -2843,7 +2882,13 @@ gfx_drawnumber(root_note, 0);
 gfx_x = 500;
 gfx_y = 420;
 gfx_drawstr("Detected root: ");
-detected_root_note >= 0 ? gfx_drawnumber(detected_root_note, 0) : gfx_drawstr("--");
+detected_root_note >= 0 ? (
+    strcpy(#note_names, "C C#D D#E F F#G G#A A#B ");
+    strcpy_substr(#detected_name, #note_names, (detected_root_note % 12)*2, 2);
+    gfx_drawstr(#detected_name);
+    gfx_drawnumber(floor(detected_root_note/12)-1, 0);
+    gfx_drawstr(" / MIDI "); gfx_drawnumber(detected_root_note, 0);
+) : gfx_drawstr("--");
 
 gfx_x = 500;
 gfx_y = 445;
@@ -2851,9 +2896,15 @@ gfx_drawstr("Confidence: ");
 gfx_drawnumber(detected_confidence * 100, 1);
 gfx_drawstr("%  ");
 analysis_status == 0 ? gfx_drawstr("NOT ANALYZED");
-analysis_status == 1 ? gfx_drawstr("APPLIED");
+analysis_status == 1 ? gfx_drawstr("READY");
+analysis_status == 4 ? gfx_drawstr("APPLIED");
 analysis_status == 2 ? gfx_drawstr("LOW / MANUAL KEPT");
 analysis_status == 3 ? gfx_drawstr("ANALYZING");
+
+gfx_x = 500; gfx_y = 470;
+gfx_drawstr("Offset: "); gfx_drawnumber(detected_cents, 1); gfx_drawstr(" cents");
+gfx_x = 500; gfx_y = 495;
+gfx_drawstr("Fine Tune: "); gfx_drawnumber(fine_tune, 1); gfx_drawstr(" cents");
 
 // ==================================================
 // SCAN INFORMATION

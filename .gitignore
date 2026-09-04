@@ -1,2 +1,5 @@
 
 .drumcloud-backups/
+
+__pycache__/
+*.pyc
