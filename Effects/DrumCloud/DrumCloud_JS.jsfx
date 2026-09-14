@@ -1,7 +1,8 @@
 desc: DrumCloud JS
-version: 0.26
+version: 0.27-dev
 author: Chmod666music
 changelog:
+  Add an experimental ReaKit GRAIN interface with a dark and gold theme.
   Add Sample Fine Tune and explicit detected-root/tuning apply actions.
   Refine multi-region pitch estimates with fractional-lag cents readout.
   Add user-sample folder groundwork and portable development installation.
@@ -175,43 +176,108 @@ tags:instrument sampler granular
 options:maxmem=128000000
 
 slider1:/DrumCloud:Reverbera_851134_y2-6-percussions-iterative-slight-variation.wav:Sample
-slider2:root_note=60<0,127,1>Root MIDI note
-slider3:grain_size_ms=180<10,1000,1>Grain Size (ms)
-slider4:grain_position=0.50<0,1,0.001>Position
-slider5:density=8<1,40,0.1>Density (grains/sec)
-slider6:position_spread=0.10<0,1,0.001>Position Spread
-slider7:scan_speed=0.05<-1,1,0.001>Scan Speed
-slider8:scan_on=0<0,1,1{Off,On}>Scan
-slider9:stereo_spread=0.50<0,1,0.001>Stereo Spread
-slider10:output_db=-6<-60,6,0.1>Output (dB)
-slider11:position_mode=2<0,4,1{Forward,Backward,Ping Pong,Random Jump,Random Walk}>Position Mode
-slider12:sample_start=0<0,1,0.001>Sample Start
-slider13:sample_end=1<0,1,0.001>Sample End
-slider14:pitch_spread=0<0,12,0.1>Pitch Spread (semitones)
-slider15:attack_ms=10<0,500,1>Attack (ms)
-slider16:release_ms=80<0,1000,1>Release (ms)
-slider17:reverb_mode=0<0,3,1{Off,Room,Hall,Shimmer}>Reverb Mode
-slider18:reverb_mix=0.25<0,1,0.001>Reverb Mix
-slider19:reverb_size=0.50<0,1,0.001>Reverb Size
-slider20:reverb_decay=2.5<0.1,20,0.1>Reverb Decay (s)
-slider21:reverb_damping=0.45<0,1,0.001>Reverb Damping
-slider22:shimmer_amount=0.35<0,1,0.001>Shimmer Amount
-slider23:delay_mode=0<0,2,1{Off,Stereo,Ping Pong}>Delay Mode
-slider24:delay_time_l_ms=375<1,2000,1>Delay Time L (ms)
-slider25:delay_time_r_ms=500<1,2000,1>Delay Time R (ms)
-slider26:delay_feedback=0.35<0,0.90,0.001>Delay Feedback
-slider27:delay_mix=0.25<0,1,0.001>Delay Mix
-slider28:delay_damping=0.35<0,1,0.001>Delay Damping
-slider29:auto_root=0<0,1,1{Off,On}>Auto Root
-slider30:grain_direction=0<0,3,1{Forward,Backward,Alternate,Random}>Grain Playback Direction
-slider31:density_spread=0<0,1,0.001>Density Spread
-slider32:detect_root=0<0,1,1{Idle,Analyze}>Detect Root
-slider33:fine_tune=0<-100,100,0.1>Sample Fine Tune (cents)
-slider34:apply_tuning=0<0,2,1{Idle,Apply Root Only,Apply Root + Tune}>Apply Detected Tuning
+slider2:root_note=60<0,127,1>-Root MIDI note
+slider3:grain_size_ms=180<10,1000,1>-Grain Size (ms)
+slider4:grain_position=0.50<0,1,0.001>-Position
+slider5:density=8<1,40,0.1>-Density (grains/sec)
+slider6:position_spread=0.10<0,1,0.001>-Position Spread
+slider7:scan_speed=0.05<-1,1,0.001>-Scan Speed
+slider8:scan_on=0<0,1,1{Off,On}>-Scan
+slider9:stereo_spread=0.50<0,1,0.001>-Stereo Spread
+slider10:output_db=-6<-60,6,0.1>-Output (dB)
+slider11:position_mode=2<0,4,1{Forward,Backward,Ping Pong,Random Jump,Random Walk}>-Position Mode
+slider12:sample_start=0<0,1,0.001>-Sample Start
+slider13:sample_end=1<0,1,0.001>-Sample End
+slider14:pitch_spread=0<0,12,0.1>-Pitch Spread (semitones)
+slider15:attack_ms=10<0,500,1>-Attack (ms)
+slider16:release_ms=80<0,1000,1>-Release (ms)
+slider17:reverb_mode=0<0,3,1{Off,Room,Hall,Shimmer}>-Reverb Mode
+slider18:reverb_mix=0.25<0,1,0.001>-Reverb Mix
+slider19:reverb_size=0.50<0,1,0.001>-Reverb Size
+slider20:reverb_decay=2.5<0.1,20,0.1>-Reverb Decay (s)
+slider21:reverb_damping=0.45<0,1,0.001>-Reverb Damping
+slider22:shimmer_amount=0.35<0,1,0.001>-Shimmer Amount
+slider23:delay_mode=0<0,2,1{Off,Stereo,Ping Pong}>-Delay Mode
+slider24:delay_time_l_ms=375<1,2000,1>-Delay Time L (ms)
+slider25:delay_time_r_ms=500<1,2000,1>-Delay Time R (ms)
+slider26:delay_feedback=0.35<0,0.90,0.001>-Delay Feedback
+slider27:delay_mix=0.25<0,1,0.001>-Delay Mix
+slider28:delay_damping=0.35<0,1,0.001>-Delay Damping
+slider29:auto_root=0<0,1,1{Off,On}>-Auto Root
+slider30:grain_direction=0<0,3,1{Forward,Backward,Alternate,Random}>-Grain Playback Direction
+slider31:density_spread=0<0,1,0.001>-Density Spread
+slider32:detect_root=0<0,1,1{Idle,Analyze}>-Detect Root
+slider33:fine_tune=0<-100,100,0.1>-Sample Fine Tune (cents)
+slider34:apply_tuning=0<0,2,1{Idle,Apply Root Only,Apply Root + Tune}>-Apply Detected Tuning
+
+// ReaKit is a separate ReaPack dependency. Its public knob dispatcher provides
+// the Serum and Encoder styles used by the experimental v0.27-dev interface.
+import ReaKit/Library/knobs_kbsg.jsfx-inc
+import ReaKit/Library/buttons_kbsg.jsfx-inc
 
 @init
 
-version = 0.26;
+version = 0.27;
+
+// ReaKit widgets use persistent state blocks. Addresses 512..983 are reserved
+// for GUI state: DrumCloud's grain/voice state ends at 415 and DSP buffers begin
+// at 1024, so the UI cannot collide with audio or sample memory.
+dc_knob_words = 16;
+dc_m_grain_size = 512;
+dc_m_density = dc_m_grain_size + dc_knob_words;
+dc_m_position_spread = dc_m_density + dc_knob_words;
+dc_m_stereo_spread = dc_m_position_spread + dc_knob_words;
+dc_m_attack = dc_m_stereo_spread + dc_knob_words;
+dc_m_release = dc_m_attack + dc_knob_words;
+dc_m_position = dc_m_release + dc_knob_words;
+dc_m_scan_speed = dc_m_position + dc_knob_words;
+dc_m_sample_start = dc_m_scan_speed + dc_knob_words;
+dc_m_sample_end = dc_m_sample_start + dc_knob_words;
+dc_m_scan_on = dc_m_sample_end + dc_knob_words;
+dc_m_position_mode = dc_m_scan_on + 8;
+dc_m_root_note = dc_m_position_mode + 8;
+dc_m_pitch_spread = dc_m_root_note + dc_knob_words;
+dc_m_fine_tune = dc_m_pitch_spread + dc_knob_words;
+dc_m_auto_root = dc_m_fine_tune + dc_knob_words;
+dc_m_detect_root = dc_m_auto_root + 8;
+dc_m_apply_tuning = dc_m_detect_root + 8;
+dc_m_reverb_mix = dc_m_apply_tuning + 8;
+dc_m_reverb_size = dc_m_reverb_mix + dc_knob_words;
+dc_m_reverb_decay = dc_m_reverb_size + dc_knob_words;
+dc_m_reverb_damping = dc_m_reverb_decay + dc_knob_words;
+dc_m_shimmer = dc_m_reverb_damping + dc_knob_words;
+dc_m_reverb_mode = dc_m_shimmer + dc_knob_words;
+dc_m_delay_time_l = dc_m_reverb_mode + 8;
+dc_m_delay_time_r = dc_m_delay_time_l + dc_knob_words;
+dc_m_delay_feedback = dc_m_delay_time_r + dc_knob_words;
+dc_m_delay_mix = dc_m_delay_feedback + dc_knob_words;
+dc_m_delay_damping = dc_m_delay_mix + dc_knob_words;
+dc_m_delay_mode = dc_m_delay_damping + dc_knob_words;
+dc_m_output = dc_m_delay_mode + 8;
+dc_m_density_spread = dc_m_output + dc_knob_words;
+dc_m_grain_direction = dc_m_density_spread + dc_knob_words;
+dc_m_sample_select = dc_m_grain_direction + 8;
+
+gfx_ext_retina = 1;
+dc_prev_lmb = dc_prev_rmb = dc_prev_wheel = 0;
+dc_last_gfx_time = time_precise();
+tau = 2 * $pi;
+
+// Always identify parameters with explicit zero-based bitmasks. This makes
+// REAPER's Last Touched target reliable for named slider aliases.
+function dc_automate(slider_index) (
+    slider_automate(2 ^ (slider_index - 1));
+);
+function dc_automate_end(slider_index) (
+    slider_automate(2 ^ (slider_index - 1), 1);
+);
+function dc_automate_discrete(slider_index) (
+    slider_automate(2 ^ (slider_index - 1));
+    slider_automate(2 ^ (slider_index - 1), 1);
+);
+function dc_end_if_released(mem, slider_index) (
+    mem[5] && !mem[1] ? dc_automate_end(slider_index);
+);
 
 function valid_number(value)
 (
@@ -2240,7 +2306,13 @@ spl1 =
 // GUI
 // ==================================================
 
-@gfx 800 1180
+@gfx 1180 980
+
+// Frozen v0.26 diagnostic layout remains below for reference and can be
+// temporarily re-enabled while developing. The v0.27-dev face is drawn after
+// this block; slider declarations and the audio engine are unchanged.
+dc_legacy_gui = 0;
+dc_legacy_gui ? (
 
 
 // --------------------------------------------------
@@ -2253,6 +2325,558 @@ gfx_set(
     0.10,
     1
 );
+
+); // end frozen v0.26 layout
+
+
+// ==================================================
+// v0.27-dev REAKIT PROTOTYPE
+// ==================================================
+
+// ReaKit's public dispatcher expects these per-frame input globals.
+gfx_getchar();
+mx = mouse_x; my = mouse_y;
+LMB = mouse_cap & 1; RMB = mouse_cap & 2;
+lmb_down = LMB && !dc_prev_lmb;
+rmb_down = RMB && !dc_prev_rmb;
+CTRL = mouse_cap & 4; SHIFT = mouse_cap & 8;
+dc_now = time_precise();
+dt = min(max(dc_now - dc_last_gfx_time, 1/240), 0.05);
+dc_last_gfx_time = dc_now;
+hv_speed = 11;
+frame_wheel = mouse_wheel != dc_prev_wheel ? (mouse_wheel - dc_prev_wheel) / 120 : 0;
+
+// Design coordinates scale uniformly, leaving intentional breathing room on
+// unusually wide/tall FX windows.
+dc_sc = min(gfx_w / 1180, gfx_h / 980);
+dc_sc = max(0.55, dc_sc);
+dc_ox = (gfx_w - 1180 * dc_sc) * 0.5;
+dc_oy = (gfx_h - 980 * dc_sc) * 0.5;
+
+// Cohesive charcoal/navy + gold palette.
+dc_bg_r = 0.035; dc_bg_g = 0.043; dc_bg_b = 0.060;
+dc_panel_r = 0.065; dc_panel_g = 0.075; dc_panel_b = 0.098;
+dc_line_r = 0.145; dc_line_g = 0.160; dc_line_b = 0.195;
+dc_text_r = 0.86; dc_text_g = 0.87; dc_text_b = 0.90;
+dc_gold_r = 0.96; dc_gold_g = 0.70; dc_gold_b = 0.16;
+
+gfx_set(dc_bg_r, dc_bg_g, dc_bg_b, 1);
+gfx_rect(0, 0, gfx_w, gfx_h);
+
+// Header.
+gfx_setfont(1, "Arial", max(14, floor(25 * dc_sc)), 'b');
+gfx_set(dc_text_r, dc_text_g, dc_text_b, 1);
+gfx_x = dc_ox + 30 * dc_sc; gfx_y = dc_oy + 22 * dc_sc;
+gfx_drawstr("DRUMCLOUD");
+gfx_setfont(1, "Arial", max(8, floor(10 * dc_sc)), 'b');
+gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, 1);
+gfx_x = dc_ox + 30 * dc_sc; gfx_y = dc_oy + 55 * dc_sc;
+gfx_drawstr("v0.27-dev  /  REAKIT GUI PROTOTYPE");
+
+gfx_setfont(1, "Arial", max(8, floor(10 * dc_sc)));
+gfx_set(dc_text_r, dc_text_g, dc_text_b, 0.65);
+gfx_x = dc_ox + 430 * dc_sc; gfx_y = dc_oy + 30 * dc_sc;
+analysis_status == 3 ? gfx_drawstr("ROOT: ANALYZING...") :
+analysis_status == 2 ? gfx_drawstr("ROOT: NO RELIABLE PITCH") :
+(analysis_status == 1 || analysis_status == 4) ? (
+  gfx_drawstr("ROOT: MIDI "); gfx_drawnumber(detected_root_note, 0);
+  gfx_drawstr("  /  "); gfx_drawnumber(detected_cents, 1); gfx_drawstr(" cents");
+) : gfx_drawstr("ROOT DETECTION READY");
+
+// Compact live status in the top bar.
+gfx_setfont(1,"Arial",max(8,floor(9*dc_sc)),'b');
+active_voices>0 ? gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,1) : gfx_set(dc_text_r,dc_text_g,dc_text_b,0.42);
+gfx_x=dc_ox+890*dc_sc; gfx_y=dc_oy+29*dc_sc; gfx_drawstr("VOICES "); gfx_drawnumber(active_voices,0);
+active_grains>0 ? gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,1) : gfx_set(dc_text_r,dc_text_g,dc_text_b,0.42);
+gfx_x=dc_ox+1010*dc_sc; gfx_y=dc_oy+29*dc_sc; gfx_drawstr("GRAINS "); gfx_drawnumber(active_grains,0);
+
+// --------------------------------------------------
+// CUSTOM DRUMCLOUD WAVEFORM / GRAIN VISUALISATION
+// --------------------------------------------------
+wave_x = dc_ox + 30 * dc_sc;
+wave_y = dc_oy + 82 * dc_sc;
+wave_w = 1120 * dc_sc;
+wave_h = 220 * dc_sc;
+
+gfx_set(0.018, 0.023, 0.034, 1);
+gfx_rect(wave_x, wave_y, wave_w, wave_h);
+gfx_set(dc_line_r, dc_line_g, dc_line_b, 0.8);
+gfx_line(wave_x, wave_y + wave_h * 0.5, wave_x + wave_w, wave_y + wave_h * 0.5);
+
+mouse_inside_wave = mx >= wave_x && mx <= wave_x + wave_w &&
+                    my >= wave_y && my <= wave_y + wave_h;
+mouse_inside_wave && LMB ? (
+  grain_position = max(range_start, min(range_end, (mx - wave_x) / wave_w));
+  scan_position = grain_position;
+  dc_automate(4);
+  dc_wave_touch = 1;
+);
+dc_wave_touch && !LMB ? (dc_automate_end(4); dc_wave_touch=0;);
+
+frame_count > 1 ? (
+  gfx_set(0.32, 0.48, 0.62, 0.95);
+  dc_wx = 0; dc_last_wy = wave_y + wave_h * 0.5;
+  loop(floor(wave_w),
+    dc_norm_x = dc_wx / max(1, wave_w - 1);
+    dc_wave_frame = floor(dc_norm_x * (frame_count - 1));
+    sample_channels == 1 ? dc_wave_value = sample_buffer[dc_wave_frame] : (
+      dc_wave_index = dc_wave_frame * sample_channels;
+      dc_wave_value = (sample_buffer[dc_wave_index] + sample_buffer[dc_wave_index + 1]) * 0.5;
+    );
+    dc_wave_y = wave_y + wave_h * 0.5 - dc_wave_value * wave_h * 0.43;
+    dc_wx > 0 ? gfx_line(wave_x + dc_wx - 1, dc_last_wy, wave_x + dc_wx, dc_wave_y);
+    dc_last_wy = dc_wave_y; dc_wx += 1;
+  );
+);
+
+range_start_x = wave_x + range_start * wave_w;
+range_end_x = wave_x + range_end * wave_w;
+gfx_set(dc_bg_r, dc_bg_g, dc_bg_b, 0.82);
+gfx_rect(wave_x, wave_y, max(0, range_start_x - wave_x), wave_h);
+gfx_rect(range_end_x, wave_y, max(0, wave_x + wave_w - range_end_x), wave_h);
+gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, 0.58);
+gfx_line(range_start_x, wave_y, range_start_x, wave_y + wave_h);
+gfx_line(range_end_x, wave_y, range_end_x, wave_y + wave_h);
+gfx_triangle(range_start_x, wave_y, range_start_x+10*dc_sc, wave_y,
+             range_start_x, wave_y+10*dc_sc);
+gfx_triangle(range_end_x, wave_y, range_end_x-10*dc_sc, wave_y,
+             range_end_x, wave_y+10*dc_sc);
+
+frame_count > 1 ? (
+  gfx_grain_i = 0;
+  loop(max_grains,
+    active_base[gfx_grain_i] && retire_base[gfx_grain_i] <= 0 &&
+    valid_number(start_base[gfx_grain_i]) && valid_number(phase_base[gfx_grain_i]) &&
+    valid_number(step_base[gfx_grain_i]) && valid_number(length_base[gfx_grain_i]) &&
+    length_base[gfx_grain_i] >= 1 ? (
+      grain_current_pos = start_base[gfx_grain_i] + phase_base[gfx_grain_i] * step_base[gfx_grain_i];
+      grain_marker_pos = max(0, min(1, grain_current_pos / frame_count));
+      grain_marker_x = wave_x + grain_marker_pos * wave_w;
+      grain_progress = max(0, min(1, phase_base[gfx_grain_i] / max(1, length_base[gfx_grain_i])));
+      marker_alpha = 0.20 + 0.80 * (1 - grain_progress);
+      gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, marker_alpha);
+      gfx_line(grain_marker_x, wave_y + 8 * dc_sc, grain_marker_x, wave_y + wave_h - 8 * dc_sc);
+      gfx_circle(grain_marker_x, wave_y + wave_h * 0.5, max(2, 3 * dc_sc), 1);
+    );
+    gfx_grain_i += 1;
+  );
+);
+
+position_x = wave_x + grain_position * wave_w;
+gfx_set(1.0, 0.82, 0.30, 1);
+gfx_line(position_x, wave_y, position_x, wave_y + wave_h);
+gfx_triangle(position_x - 6 * dc_sc, wave_y, position_x + 6 * dc_sc, wave_y,
+             position_x, wave_y + 9 * dc_sc);
+mouse_inside_wave ? (
+  gfx_set(1, 1, 1, 0.10); gfx_line(mx, wave_y, mx, wave_y + wave_h);
+);
+gfx_set(dc_line_r, dc_line_g, dc_line_b, 1);
+gfx_rect(wave_x, wave_y, wave_w, wave_h, 0);
+
+// --------------------------------------------------
+// GRAIN PANEL
+// --------------------------------------------------
+dc_panel_x = dc_ox + 30 * dc_sc; dc_panel_y = dc_oy + 326 * dc_sc;
+dc_panel_w = 550 * dc_sc; dc_panel_h = 248 * dc_sc;
+gfx_set(dc_panel_r, dc_panel_g, dc_panel_b, 1);
+gfx_rect(dc_panel_x, dc_panel_y, dc_panel_w, dc_panel_h);
+gfx_set(dc_line_r, dc_line_g, dc_line_b, 1);
+gfx_rect(dc_panel_x, dc_panel_y, dc_panel_w, dc_panel_h, 0);
+gfx_setfont(1, "Arial", max(9, floor(12 * dc_sc)), 'b');
+gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, 1);
+gfx_x = dc_panel_x + 16 * dc_sc; gfx_y = dc_panel_y + 11 * dc_sc; gfx_drawstr("GRAIN");
+gfx_set(dc_line_r, dc_line_g, dc_line_b, 1);
+gfx_rect(dc_panel_x + 16 * dc_sc, dc_panel_y + 34 * dc_sc, dc_panel_w - 32 * dc_sc, 1);
+
+// Primary: large Serum controls. Accent arguments color ring and pointer;
+// panel arguments color the unlit track. Values remain the original sliders.
+dc_cy = dc_panel_y + 126 * dc_sc;
+dc_r_main = 42 * dc_sc;
+dc_x1 = dc_panel_x + 85 * dc_sc;
+dc_x2 = dc_panel_x + 205 * dc_sc;
+dc_nv = rk_knob_interact(17, dc_m_grain_size, dc_x1, dc_cy, dc_r_main,
+                         grain_size_ms, 10, 1000, 180, 0);
+dc_nv != grain_size_ms ? (grain_size_ms = dc_nv; dc_automate(3););
+rk_knob_draw(17, dc_x1, dc_cy, dc_r_main, grain_size_ms, 10, 1000, 0,
+             dc_m_grain_size[0], dc_gold_r, dc_gold_g, dc_gold_b, 0,
+             dc_panel_r, dc_panel_g, dc_panel_b);
+dc_nv = rk_knob_interact(17, dc_m_density, dc_x2, dc_cy, dc_r_main,
+                         density, 1, 40, 8, 0);
+dc_nv != density ? (
+  density = dc_nv;
+  // Explicit zero-based bitmask makes REAPER's last-touched target
+  // unambiguous even though slider5 has the named alias `density`.
+  dc_automate(5);
+);
+rk_knob_draw(17, dc_x2, dc_cy, dc_r_main, density, 1, 40, 0,
+             dc_m_density[0], dc_gold_r, dc_gold_g, dc_gold_b, 0,
+             dc_panel_r, dc_panel_g, dc_panel_b);
+
+// Secondary: smaller Encoder controls. ReaKit 1.3 applies cr/cg/cb to the LED
+// field; its stock Encoder pointer is intentionally white (library limitation).
+dc_r_small = 22 * dc_sc;
+dc_x3 = dc_panel_x + 315 * dc_sc; dc_x4 = dc_panel_x + 390 * dc_sc;
+dc_x5 = dc_panel_x + 465 * dc_sc; dc_x6 = dc_panel_x + 525 * dc_sc;
+dc_nv = rk_knob_interact(11, dc_m_position_spread, dc_x3, dc_cy, dc_r_small,
+                         position_spread, 0, 1, 0.10, 0);
+dc_nv != position_spread ? (position_spread = dc_nv; dc_automate(6););
+rk_knob_draw(11, dc_x3, dc_cy, dc_r_small, position_spread, 0, 1, 0,
+             dc_m_position_spread[0], dc_gold_r, dc_gold_g, dc_gold_b, 0,
+             dc_panel_r, dc_panel_g, dc_panel_b);
+dc_nv = rk_knob_interact(11, dc_m_stereo_spread, dc_x4, dc_cy, dc_r_small,
+                         stereo_spread, 0, 1, 0.50, 0);
+dc_nv != stereo_spread ? (stereo_spread = dc_nv; dc_automate(9););
+rk_knob_draw(11, dc_x4, dc_cy, dc_r_small, stereo_spread, 0, 1, 0,
+             dc_m_stereo_spread[0], dc_gold_r, dc_gold_g, dc_gold_b, 0,
+             dc_panel_r, dc_panel_g, dc_panel_b);
+dc_nv = rk_knob_interact(11, dc_m_attack, dc_x5, dc_cy, dc_r_small,
+                         attack_ms, 0, 500, 10, 0);
+dc_nv != attack_ms ? (attack_ms = dc_nv; dc_automate(15););
+rk_knob_draw(11, dc_x5, dc_cy, dc_r_small, attack_ms, 0, 500, 0,
+             dc_m_attack[0], dc_gold_r, dc_gold_g, dc_gold_b, 0,
+             dc_panel_r, dc_panel_g, dc_panel_b);
+dc_nv = rk_knob_interact(11, dc_m_release, dc_x6, dc_cy, dc_r_small,
+                         release_ms, 0, 1000, 80, 0);
+dc_nv != release_ms ? (release_ms = dc_nv; dc_automate(16););
+rk_knob_draw(11, dc_x6, dc_cy, dc_r_small, release_ms, 0, 1000, 0,
+             dc_m_release[0], dc_gold_r, dc_gold_g, dc_gold_b, 0,
+             dc_panel_r, dc_panel_g, dc_panel_b);
+
+// Labels and live values.
+gfx_setfont(1, "Arial", max(8, floor(10 * dc_sc)), 'b');
+gfx_set(dc_text_r, dc_text_g, dc_text_b, 0.92);
+gfx_measurestr("GRAIN SIZE", dc_tw, dc_th); gfx_x = dc_x1 - dc_tw/2; gfx_y = dc_panel_y + 190*dc_sc; gfx_drawstr("GRAIN SIZE");
+gfx_measurestr("DENSITY", dc_tw, dc_th); gfx_x = dc_x2 - dc_tw/2; gfx_y = dc_panel_y + 190*dc_sc; gfx_drawstr("DENSITY");
+gfx_setfont(1, "Arial", max(7, floor(8 * dc_sc)), 'b');
+gfx_measurestr("POSITION", dc_tw, dc_th); gfx_x = dc_x3 - dc_tw/2; gfx_y = dc_panel_y + 166*dc_sc; gfx_drawstr("POSITION");
+gfx_measurestr("STEREO", dc_tw, dc_th); gfx_x = dc_x4 - dc_tw/2; gfx_y = dc_panel_y + 166*dc_sc; gfx_drawstr("STEREO");
+gfx_measurestr("ATTACK", dc_tw, dc_th); gfx_x = dc_x5 - dc_tw/2; gfx_y = dc_panel_y + 166*dc_sc; gfx_drawstr("ATTACK");
+gfx_measurestr("RELEASE", dc_tw, dc_th); gfx_x = dc_x6 - dc_tw/2; gfx_y = dc_panel_y + 166*dc_sc; gfx_drawstr("RELEASE");
+gfx_setfont(1, "Arial", max(8, floor(9 * dc_sc)));
+gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, 0.95);
+gfx_x = dc_x1 - 25*dc_sc; gfx_y = dc_panel_y + 213*dc_sc; gfx_drawnumber(grain_size_ms, 0); gfx_drawstr(" ms");
+gfx_x = dc_x2 - 22*dc_sc; gfx_y = dc_panel_y + 213*dc_sc; gfx_drawnumber(density, 1); gfx_drawstr(" Hz");
+gfx_x = dc_x3 - 14*dc_sc; gfx_y = dc_panel_y + 189*dc_sc; gfx_drawnumber(position_spread*100, 0); gfx_drawstr("%");
+gfx_x = dc_x4 - 14*dc_sc; gfx_y = dc_panel_y + 189*dc_sc; gfx_drawnumber(stereo_spread*100, 0); gfx_drawstr("%");
+gfx_x = dc_x5 - 15*dc_sc; gfx_y = dc_panel_y + 189*dc_sc; gfx_drawnumber(attack_ms, 0); gfx_drawstr("ms");
+gfx_x = dc_x6 - 15*dc_sc; gfx_y = dc_panel_y + 189*dc_sc; gfx_drawnumber(release_ms, 0); gfx_drawstr("ms");
+
+// --------------------------------------------------
+// MOTION / POSITION PANEL
+// --------------------------------------------------
+dc_motion_x = dc_ox + 600*dc_sc; dc_motion_y = dc_oy + 326*dc_sc;
+dc_motion_w = 550*dc_sc; dc_motion_h = 248*dc_sc;
+gfx_set(dc_panel_r, dc_panel_g, dc_panel_b, 1); gfx_rect(dc_motion_x, dc_motion_y, dc_motion_w, dc_motion_h);
+gfx_set(dc_line_r, dc_line_g, dc_line_b, 1); gfx_rect(dc_motion_x, dc_motion_y, dc_motion_w, dc_motion_h, 0);
+gfx_setfont(1, "Arial", max(9, floor(12*dc_sc)), 'b'); gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, 1);
+gfx_x = dc_motion_x + 16*dc_sc; gfx_y = dc_motion_y + 10*dc_sc; gfx_drawstr("MOTION");
+gfx_set(dc_line_r, dc_line_g, dc_line_b, 1); gfx_rect(dc_motion_x + 16*dc_sc, dc_motion_y + 33*dc_sc, dc_motion_w - 32*dc_sc, 1);
+
+dc_motion_cy = dc_motion_y + 126*dc_sc;
+dc_pos_x = dc_motion_x + 60*dc_sc; dc_scan_x = dc_motion_x + 145*dc_sc;
+dc_start_x = dc_motion_x + 230*dc_sc; dc_end_x = dc_motion_x + 310*dc_sc;
+dc_nv = rk_knob_interact(17, dc_m_position, dc_pos_x, dc_motion_cy, 28*dc_sc, grain_position, 0, 1, 0.50, 0);
+dc_nv != grain_position ? (grain_position = dc_nv; scan_position = grain_position; dc_automate(4););
+rk_knob_draw(17, dc_pos_x, dc_motion_cy, 28*dc_sc, grain_position, 0, 1, 0, dc_m_position[0], dc_gold_r, dc_gold_g, dc_gold_b, 0, dc_panel_r, dc_panel_g, dc_panel_b);
+dc_nv = rk_knob_interact(17, dc_m_scan_speed, dc_scan_x, dc_motion_cy, 28*dc_sc, scan_speed, -1, 1, 0.05, 0);
+dc_nv != scan_speed ? (scan_speed = dc_nv; dc_automate(7););
+rk_knob_draw(17, dc_scan_x, dc_motion_cy, 28*dc_sc, scan_speed, -1, 1, 1, dc_m_scan_speed[0], dc_gold_r, dc_gold_g, dc_gold_b, 0, dc_panel_r, dc_panel_g, dc_panel_b);
+// Encoder LEDs extend beyond their nominal radius. A 29 px design radius keeps
+// the actual hit target usable when the whole interface is scaled down.
+dc_range_r = 29*dc_sc;
+dc_nv = rk_knob_interact(11, dc_m_sample_start, dc_start_x, dc_motion_cy, dc_range_r, sample_start, 0, 1, 0, 0);
+dc_nv != sample_start ? (sample_start = dc_nv; dc_automate(12););
+rk_knob_draw(11, dc_start_x, dc_motion_cy, dc_range_r, sample_start, 0, 1, 0, dc_m_sample_start[0], dc_gold_r, dc_gold_g, dc_gold_b, 0, dc_panel_r, dc_panel_g, dc_panel_b);
+dc_nv = rk_knob_interact(11, dc_m_sample_end, dc_end_x, dc_motion_cy, dc_range_r, sample_end, 0, 1, 1, 0);
+dc_nv != sample_end ? (sample_end = dc_nv; dc_automate(13););
+rk_knob_draw(11, dc_end_x, dc_motion_cy, dc_range_r, sample_end, 0, 1, 0, dc_m_sample_end[0], dc_gold_r, dc_gold_g, dc_gold_b, 0, dc_panel_r, dc_panel_g, dc_panel_b);
+
+// Programmatic writes from @gfx do not guarantee that @slider runs before the
+// next paint. Mirror its range normalization here for immediate visual feedback.
+range_start = min(sample_start, sample_end);
+range_end = max(sample_start, sample_end);
+range_end - range_start < 0.001 ? (
+  range_end = min(1, range_start + 0.001);
+  range_end - range_start < 0.001 ? range_start = max(0, range_end - 0.001);
+);
+grain_position = max(range_start, min(range_end, grain_position));
+scan_position = max(range_start, min(range_end, scan_position));
+
+gfx_setfont(1, "Arial", max(7, floor(8*dc_sc)), 'b'); gfx_set(dc_text_r, dc_text_g, dc_text_b, 0.9);
+gfx_measurestr("POSITION",dc_tw,dc_th); gfx_x=dc_pos_x-dc_tw/2; gfx_y=dc_motion_y+164*dc_sc; gfx_drawstr("POSITION");
+gfx_measurestr("SCAN SPEED",dc_tw,dc_th); gfx_x=dc_scan_x-dc_tw/2; gfx_y=dc_motion_y+164*dc_sc; gfx_drawstr("SCAN SPEED");
+gfx_measurestr("START",dc_tw,dc_th); gfx_x=dc_start_x-dc_tw/2; gfx_y=dc_motion_y+164*dc_sc; gfx_drawstr("START");
+gfx_measurestr("END",dc_tw,dc_th); gfx_x=dc_end_x-dc_tw/2; gfx_y=dc_motion_y+164*dc_sc; gfx_drawstr("END");
+gfx_setfont(1, "Arial", max(7, floor(8*dc_sc))); gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, 0.95);
+gfx_x=dc_pos_x-13*dc_sc; gfx_y=dc_motion_y+184*dc_sc; gfx_drawnumber(grain_position*100,0); gfx_drawstr("%");
+gfx_x=dc_scan_x-18*dc_sc; gfx_y=dc_motion_y+184*dc_sc; gfx_drawnumber(scan_speed,2);
+gfx_x=dc_start_x-13*dc_sc; gfx_y=dc_motion_y+184*dc_sc; gfx_drawnumber(sample_start*100,0); gfx_drawstr("%");
+gfx_x=dc_end_x-13*dc_sc; gfx_y=dc_motion_y+184*dc_sc; gfx_drawnumber(sample_end*100,0); gfx_drawstr("%");
+
+// Scan toggle and five-way position-mode selector use ReaKit buttons.
+dc_btn_x = dc_motion_x + 350*dc_sc; dc_btn_y = dc_motion_y + 79*dc_sc;
+dc_nv = btn_pill_interact(dc_m_scan_on, dc_btn_x, dc_btn_y, 74*dc_sc, 26*dc_sc, scan_on);
+dc_nv != scan_on ? (scan_on = dc_nv; dc_automate_discrete(8););
+gfx_setfont(1, "Arial", max(7, floor(8*dc_sc)), 'b');
+btn_pill_draw(dc_btn_x, dc_btn_y, 74*dc_sc, 26*dc_sc, scan_on, "SCAN", dc_m_scan_on[0], dc_gold_r, dc_gold_g, dc_gold_b);
+
+dc_seg_x = dc_motion_x + 350*dc_sc; dc_seg_y = dc_motion_y + 139*dc_sc;
+dc_seg_gap = 2*dc_sc; dc_seg_w = 37*dc_sc; dc_seg_h = 25*dc_sc;
+dc_nv = btn_segment_interact(dc_m_position_mode, dc_seg_x, dc_seg_y, dc_seg_w, dc_seg_h, 5, dc_seg_gap, position_mode);
+dc_nv != position_mode ? (position_mode = dc_nv; dc_automate_discrete(11););
+btn_segment_draw(dc_seg_x, dc_seg_y, dc_seg_w, dc_seg_h, 0, position_mode, "FWD", dc_m_position_mode[0], dc_gold_r, dc_gold_g, dc_gold_b);
+btn_segment_draw(dc_seg_x+(dc_seg_w+dc_seg_gap), dc_seg_y, dc_seg_w, dc_seg_h, 1, position_mode, "BACK", dc_m_position_mode[0], dc_gold_r, dc_gold_g, dc_gold_b);
+btn_segment_draw(dc_seg_x+2*(dc_seg_w+dc_seg_gap), dc_seg_y, dc_seg_w, dc_seg_h, 2, position_mode, "PING", dc_m_position_mode[0], dc_gold_r, dc_gold_g, dc_gold_b);
+btn_segment_draw(dc_seg_x+3*(dc_seg_w+dc_seg_gap), dc_seg_y, dc_seg_w, dc_seg_h, 3, position_mode, "JUMP", dc_m_position_mode[0], dc_gold_r, dc_gold_g, dc_gold_b);
+btn_segment_draw(dc_seg_x+4*(dc_seg_w+dc_seg_gap), dc_seg_y, dc_seg_w, dc_seg_h, 4, position_mode, "WALK", dc_m_position_mode[0], dc_gold_r, dc_gold_g, dc_gold_b);
+gfx_setfont(1, "Arial", max(7, floor(8*dc_sc)), 'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.65);
+gfx_x=dc_seg_x; gfx_y=dc_motion_y+121*dc_sc; gfx_drawstr("POSITION MODE");
+
+// --------------------------------------------------
+// PITCH / TUNING PANEL
+// --------------------------------------------------
+dc_pitch_x=dc_ox+30*dc_sc; dc_pitch_y=dc_oy+590*dc_sc;
+dc_pitch_w=550*dc_sc; dc_pitch_h=176*dc_sc;
+gfx_set(dc_panel_r,dc_panel_g,dc_panel_b,1); gfx_rect(dc_pitch_x,dc_pitch_y,dc_pitch_w,dc_pitch_h);
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_pitch_x,dc_pitch_y,dc_pitch_w,dc_pitch_h,0);
+gfx_setfont(1,"Arial",max(9,floor(12*dc_sc)),'b'); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,1);
+gfx_x=dc_pitch_x+16*dc_sc; gfx_y=dc_pitch_y+10*dc_sc; gfx_drawstr("PITCH");
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_pitch_x+16*dc_sc,dc_pitch_y+33*dc_sc,dc_pitch_w-32*dc_sc,1);
+
+dc_pitch_cy=dc_pitch_y+89*dc_sc;
+dc_root_x=dc_pitch_x+70*dc_sc; dc_spread_x=dc_pitch_x+165*dc_sc; dc_fine_x=dc_pitch_x+260*dc_sc;
+dc_nv=rk_knob_interact(11,dc_m_root_note,dc_root_x,dc_pitch_cy,28*dc_sc,root_note,0,127,60,128);
+dc_nv!=root_note ? (root_note=floor(dc_nv+0.5); manual_root_note=root_note; dc_automate(2););
+rk_knob_draw(11,dc_root_x,dc_pitch_cy,28*dc_sc,root_note,0,127,0,dc_m_root_note[0],dc_gold_r,dc_gold_g,dc_gold_b,128,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(17,dc_m_pitch_spread,dc_spread_x,dc_pitch_cy,28*dc_sc,pitch_spread,0,12,0,0);
+dc_nv!=pitch_spread ? (pitch_spread=dc_nv; dc_automate(14););
+rk_knob_draw(17,dc_spread_x,dc_pitch_cy,28*dc_sc,pitch_spread,0,12,0,dc_m_pitch_spread[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_fine_tune,dc_fine_x,dc_pitch_cy,28*dc_sc,fine_tune,-100,100,0,0);
+dc_nv!=fine_tune ? (fine_tune=dc_nv; dc_automate(33););
+rk_knob_draw(11,dc_fine_x,dc_pitch_cy,28*dc_sc,fine_tune,-100,100,1,dc_m_fine_tune[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.9);
+gfx_measurestr("ROOT NOTE",dc_tw,dc_th); gfx_x=dc_root_x-dc_tw/2; gfx_y=dc_pitch_y+124*dc_sc; gfx_drawstr("ROOT NOTE");
+gfx_measurestr("SPREAD",dc_tw,dc_th); gfx_x=dc_spread_x-dc_tw/2; gfx_y=dc_pitch_y+124*dc_sc; gfx_drawstr("SPREAD");
+gfx_measurestr("FINE",dc_tw,dc_th); gfx_x=dc_fine_x-dc_tw/2; gfx_y=dc_pitch_y+124*dc_sc; gfx_drawstr("FINE");
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc))); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,0.95);
+gfx_x=dc_root_x-10*dc_sc; gfx_y=dc_pitch_y+144*dc_sc; gfx_drawnumber(root_note,0);
+gfx_x=dc_spread_x-18*dc_sc; gfx_y=dc_pitch_y+144*dc_sc; gfx_drawnumber(pitch_spread,1); gfx_drawstr(" st");
+gfx_x=dc_fine_x-20*dc_sc; gfx_y=dc_pitch_y+144*dc_sc; gfx_drawnumber(fine_tune,1); gfx_drawstr(" ct");
+
+dc_auto_x=dc_pitch_x+315*dc_sc; dc_auto_y=dc_pitch_y+50*dc_sc;
+dc_nv=btn_pill_interact(dc_m_auto_root,dc_auto_x,dc_auto_y,92*dc_sc,26*dc_sc,auto_root);
+dc_nv!=auto_root ? (auto_root=dc_nv; dc_automate_discrete(29););
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b');
+btn_pill_draw(dc_auto_x,dc_auto_y,92*dc_sc,26*dc_sc,auto_root,"AUTO ROOT",dc_m_auto_root[0],dc_gold_r,dc_gold_g,dc_gold_b);
+
+dc_detect_x=dc_pitch_x+418*dc_sc; dc_detect_y=dc_pitch_y+50*dc_sc;
+dc_nv=btn_pill_interact(dc_m_detect_root,dc_detect_x,dc_detect_y,104*dc_sc,26*dc_sc,detect_root);
+dc_nv!=detect_root ? (detect_root=dc_nv; dc_automate_discrete(32););
+btn_pill_draw(dc_detect_x,dc_detect_y,104*dc_sc,26*dc_sc,detect_root,"DETECT ROOT",dc_m_detect_root[0],dc_gold_r,dc_gold_g,dc_gold_b);
+
+dc_apply_x=dc_pitch_x+315*dc_sc; dc_apply_y=dc_pitch_y+103*dc_sc;
+dc_apply_gap=3*dc_sc; dc_apply_w=70*dc_sc; dc_apply_h=27*dc_sc;
+dc_nv=btn_segment_interact(dc_m_apply_tuning,dc_apply_x,dc_apply_y,dc_apply_w,dc_apply_h,3,dc_apply_gap,apply_tuning);
+dc_nv!=apply_tuning ? (apply_tuning=dc_nv; dc_automate_discrete(34););
+btn_segment_draw(dc_apply_x,dc_apply_y,dc_apply_w,dc_apply_h,0,apply_tuning,"IDLE",dc_m_apply_tuning[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_apply_x+dc_apply_w+dc_apply_gap,dc_apply_y,dc_apply_w,dc_apply_h,1,apply_tuning,"APPLY ROOT",dc_m_apply_tuning[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_apply_x+2*(dc_apply_w+dc_apply_gap),dc_apply_y,dc_apply_w,dc_apply_h,2,apply_tuning,"ROOT + TUNE",dc_m_apply_tuning[0],dc_gold_r,dc_gold_g,dc_gold_b);
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.62);
+gfx_x=dc_apply_x; gfx_y=dc_pitch_y+85*dc_sc; gfx_drawstr("DETECTED TUNING");
+gfx_x=dc_detect_x+118*dc_sc; gfx_y=dc_pitch_y+57*dc_sc;
+analysis_status==3 ? gfx_drawstr("ANALYZING") : analysis_status==2 ? gfx_drawstr("NO PITCH") :
+analysis_status==1 ? gfx_drawstr("READY") : analysis_status==4 ? gfx_drawstr("APPLIED") : gfx_drawstr("IDLE");
+
+// --------------------------------------------------
+// SPACE / REVERB PANEL
+// --------------------------------------------------
+dc_space_x=dc_ox+600*dc_sc; dc_space_y=dc_oy+590*dc_sc;
+dc_space_w=550*dc_sc; dc_space_h=176*dc_sc;
+gfx_set(dc_panel_r,dc_panel_g,dc_panel_b,1); gfx_rect(dc_space_x,dc_space_y,dc_space_w,dc_space_h);
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_space_x,dc_space_y,dc_space_w,dc_space_h,0);
+gfx_setfont(1,"Arial",max(9,floor(12*dc_sc)),'b'); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,1);
+gfx_x=dc_space_x+16*dc_sc; gfx_y=dc_space_y+10*dc_sc; gfx_drawstr("SPACE");
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_space_x+16*dc_sc,dc_space_y+33*dc_sc,dc_space_w-32*dc_sc,1);
+
+dc_space_cy=dc_space_y+91*dc_sc;
+dc_mix_x=dc_space_x+60*dc_sc; dc_size_x=dc_space_x+145*dc_sc;
+dc_decay_x=dc_space_x+235*dc_sc; dc_damp_x=dc_space_x+310*dc_sc; dc_shimmer_x=dc_space_x+385*dc_sc;
+dc_nv=rk_knob_interact(17,dc_m_reverb_mix,dc_mix_x,dc_space_cy,30*dc_sc,reverb_mix,0,1,0.25,0);
+dc_nv!=reverb_mix ? (reverb_mix=dc_nv; dc_automate(18););
+rk_knob_draw(17,dc_mix_x,dc_space_cy,30*dc_sc,reverb_mix,0,1,0,dc_m_reverb_mix[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(17,dc_m_reverb_size,dc_size_x,dc_space_cy,30*dc_sc,reverb_size,0,1,0.50,0);
+dc_nv!=reverb_size ? (reverb_size=dc_nv; dc_automate(19););
+rk_knob_draw(17,dc_size_x,dc_space_cy,30*dc_sc,reverb_size,0,1,0,dc_m_reverb_size[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_reverb_decay,dc_decay_x,dc_space_cy,24*dc_sc,reverb_decay,0.1,20,2.5,0);
+dc_nv!=reverb_decay ? (reverb_decay=dc_nv; dc_automate(20););
+rk_knob_draw(11,dc_decay_x,dc_space_cy,24*dc_sc,reverb_decay,0.1,20,0,dc_m_reverb_decay[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_reverb_damping,dc_damp_x,dc_space_cy,24*dc_sc,reverb_damping,0,1,0.45,0);
+dc_nv!=reverb_damping ? (reverb_damping=dc_nv; dc_automate(21););
+rk_knob_draw(11,dc_damp_x,dc_space_cy,24*dc_sc,reverb_damping,0,1,0,dc_m_reverb_damping[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_shimmer,dc_shimmer_x,dc_space_cy,24*dc_sc,shimmer_amount,0,1,0.35,0);
+dc_nv!=shimmer_amount ? (shimmer_amount=dc_nv; dc_automate(22););
+rk_knob_draw(11,dc_shimmer_x,dc_space_cy,24*dc_sc,shimmer_amount,0,1,0,dc_m_shimmer[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.9);
+gfx_measurestr("MIX",dc_tw,dc_th); gfx_x=dc_mix_x-dc_tw/2; gfx_y=dc_space_y+128*dc_sc; gfx_drawstr("MIX");
+gfx_measurestr("SIZE",dc_tw,dc_th); gfx_x=dc_size_x-dc_tw/2; gfx_y=dc_space_y+128*dc_sc; gfx_drawstr("SIZE");
+gfx_measurestr("DECAY",dc_tw,dc_th); gfx_x=dc_decay_x-dc_tw/2; gfx_y=dc_space_y+122*dc_sc; gfx_drawstr("DECAY");
+gfx_measurestr("DAMPING",dc_tw,dc_th); gfx_x=dc_damp_x-dc_tw/2; gfx_y=dc_space_y+122*dc_sc; gfx_drawstr("DAMPING");
+gfx_measurestr("SHIMMER",dc_tw,dc_th); gfx_x=dc_shimmer_x-dc_tw/2; gfx_y=dc_space_y+122*dc_sc; gfx_drawstr("SHIMMER");
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc))); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,0.95);
+gfx_x=dc_mix_x-13*dc_sc; gfx_y=dc_space_y+148*dc_sc; gfx_drawnumber(reverb_mix*100,0); gfx_drawstr("%");
+gfx_x=dc_size_x-13*dc_sc; gfx_y=dc_space_y+148*dc_sc; gfx_drawnumber(reverb_size*100,0); gfx_drawstr("%");
+gfx_x=dc_decay_x-16*dc_sc; gfx_y=dc_space_y+142*dc_sc; gfx_drawnumber(reverb_decay,1); gfx_drawstr(" s");
+gfx_x=dc_damp_x-13*dc_sc; gfx_y=dc_space_y+142*dc_sc; gfx_drawnumber(reverb_damping*100,0); gfx_drawstr("%");
+gfx_x=dc_shimmer_x-13*dc_sc; gfx_y=dc_space_y+142*dc_sc; gfx_drawnumber(shimmer_amount*100,0); gfx_drawstr("%");
+
+dc_mode_x=dc_space_x+415*dc_sc; dc_mode_y=dc_space_y+74*dc_sc;
+dc_mode_gap=2*dc_sc; dc_mode_w=29*dc_sc; dc_mode_h=27*dc_sc;
+dc_nv=btn_segment_interact(dc_m_reverb_mode,dc_mode_x,dc_mode_y,dc_mode_w,dc_mode_h,4,dc_mode_gap,reverb_mode);
+dc_nv!=reverb_mode ? (reverb_mode=dc_nv; dc_automate_discrete(17););
+btn_segment_draw(dc_mode_x,dc_mode_y,dc_mode_w,dc_mode_h,0,reverb_mode,"OFF",dc_m_reverb_mode[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_mode_x+dc_mode_w+dc_mode_gap,dc_mode_y,dc_mode_w,dc_mode_h,1,reverb_mode,"ROOM",dc_m_reverb_mode[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_mode_x+2*(dc_mode_w+dc_mode_gap),dc_mode_y,dc_mode_w,dc_mode_h,2,reverb_mode,"HALL",dc_m_reverb_mode[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_mode_x+3*(dc_mode_w+dc_mode_gap),dc_mode_y,dc_mode_w,dc_mode_h,3,reverb_mode,"SHIM",dc_m_reverb_mode[0],dc_gold_r,dc_gold_g,dc_gold_b);
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.65);
+gfx_x=dc_mode_x; gfx_y=dc_space_y+52*dc_sc; gfx_drawstr("REVERB MODE");
+
+// --------------------------------------------------
+// DELAY PANEL
+// --------------------------------------------------
+dc_delay_x=dc_ox+30*dc_sc; dc_delay_y=dc_oy+782*dc_sc;
+dc_delay_w=550*dc_sc; dc_delay_h=176*dc_sc;
+gfx_set(dc_panel_r,dc_panel_g,dc_panel_b,1); gfx_rect(dc_delay_x,dc_delay_y,dc_delay_w,dc_delay_h);
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_delay_x,dc_delay_y,dc_delay_w,dc_delay_h,0);
+gfx_setfont(1,"Arial",max(9,floor(12*dc_sc)),'b'); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,1);
+gfx_x=dc_delay_x+16*dc_sc; gfx_y=dc_delay_y+10*dc_sc; gfx_drawstr("DELAY");
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_delay_x+16*dc_sc,dc_delay_y+33*dc_sc,dc_delay_w-32*dc_sc,1);
+
+dc_delay_cy=dc_delay_y+91*dc_sc;
+dc_time_l_x=dc_delay_x+70*dc_sc; dc_time_r_x=dc_delay_x+165*dc_sc;
+dc_feedback_x=dc_delay_x+250*dc_sc; dc_delay_mix_x=dc_delay_x+320*dc_sc; dc_delay_damp_x=dc_delay_x+390*dc_sc;
+dc_nv=rk_knob_interact(17,dc_m_delay_time_l,dc_time_l_x,dc_delay_cy,30*dc_sc,delay_time_l_ms,1,2000,375,0);
+dc_nv!=delay_time_l_ms ? (delay_time_l_ms=dc_nv; dc_automate(24););
+rk_knob_draw(17,dc_time_l_x,dc_delay_cy,30*dc_sc,delay_time_l_ms,1,2000,0,dc_m_delay_time_l[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(17,dc_m_delay_time_r,dc_time_r_x,dc_delay_cy,30*dc_sc,delay_time_r_ms,1,2000,500,0);
+dc_nv!=delay_time_r_ms ? (delay_time_r_ms=dc_nv; dc_automate(25););
+rk_knob_draw(17,dc_time_r_x,dc_delay_cy,30*dc_sc,delay_time_r_ms,1,2000,0,dc_m_delay_time_r[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_delay_feedback,dc_feedback_x,dc_delay_cy,24*dc_sc,delay_feedback,0,0.90,0.35,0);
+dc_nv!=delay_feedback ? (delay_feedback=dc_nv; dc_automate(26););
+rk_knob_draw(11,dc_feedback_x,dc_delay_cy,24*dc_sc,delay_feedback,0,0.90,0,dc_m_delay_feedback[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_delay_mix,dc_delay_mix_x,dc_delay_cy,24*dc_sc,delay_mix,0,1,0.25,0);
+dc_nv!=delay_mix ? (delay_mix=dc_nv; dc_automate(27););
+rk_knob_draw(11,dc_delay_mix_x,dc_delay_cy,24*dc_sc,delay_mix,0,1,0,dc_m_delay_mix[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_delay_damping,dc_delay_damp_x,dc_delay_cy,24*dc_sc,delay_damping,0,1,0.35,0);
+dc_nv!=delay_damping ? (delay_damping=dc_nv; dc_automate(28););
+rk_knob_draw(11,dc_delay_damp_x,dc_delay_cy,24*dc_sc,delay_damping,0,1,0,dc_m_delay_damping[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.9);
+gfx_measurestr("TIME L",dc_tw,dc_th); gfx_x=dc_time_l_x-dc_tw/2; gfx_y=dc_delay_y+128*dc_sc; gfx_drawstr("TIME L");
+gfx_measurestr("TIME R",dc_tw,dc_th); gfx_x=dc_time_r_x-dc_tw/2; gfx_y=dc_delay_y+128*dc_sc; gfx_drawstr("TIME R");
+gfx_measurestr("FEEDBACK",dc_tw,dc_th); gfx_x=dc_feedback_x-dc_tw/2; gfx_y=dc_delay_y+122*dc_sc; gfx_drawstr("FEEDBACK");
+gfx_measurestr("MIX",dc_tw,dc_th); gfx_x=dc_delay_mix_x-dc_tw/2; gfx_y=dc_delay_y+122*dc_sc; gfx_drawstr("MIX");
+gfx_measurestr("DAMPING",dc_tw,dc_th); gfx_x=dc_delay_damp_x-dc_tw/2; gfx_y=dc_delay_y+122*dc_sc; gfx_drawstr("DAMPING");
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc))); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,0.95);
+gfx_x=dc_time_l_x-20*dc_sc; gfx_y=dc_delay_y+148*dc_sc; gfx_drawnumber(delay_time_l_ms,0); gfx_drawstr(" ms");
+gfx_x=dc_time_r_x-20*dc_sc; gfx_y=dc_delay_y+148*dc_sc; gfx_drawnumber(delay_time_r_ms,0); gfx_drawstr(" ms");
+gfx_x=dc_feedback_x-13*dc_sc; gfx_y=dc_delay_y+142*dc_sc; gfx_drawnumber(delay_feedback*100,0); gfx_drawstr("%");
+gfx_x=dc_delay_mix_x-13*dc_sc; gfx_y=dc_delay_y+142*dc_sc; gfx_drawnumber(delay_mix*100,0); gfx_drawstr("%");
+gfx_x=dc_delay_damp_x-13*dc_sc; gfx_y=dc_delay_y+142*dc_sc; gfx_drawnumber(delay_damping*100,0); gfx_drawstr("%");
+
+dc_delay_mode_x=dc_delay_x+430*dc_sc; dc_delay_mode_y=dc_delay_y+75*dc_sc;
+dc_delay_mode_gap=2*dc_sc; dc_delay_mode_w=34*dc_sc; dc_delay_mode_h=27*dc_sc;
+dc_nv=btn_segment_interact(dc_m_delay_mode,dc_delay_mode_x,dc_delay_mode_y,dc_delay_mode_w,dc_delay_mode_h,3,dc_delay_mode_gap,delay_mode);
+dc_nv!=delay_mode ? (delay_mode=dc_nv; dc_automate_discrete(23););
+btn_segment_draw(dc_delay_mode_x,dc_delay_mode_y,dc_delay_mode_w,dc_delay_mode_h,0,delay_mode,"OFF",dc_m_delay_mode[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_delay_mode_x+dc_delay_mode_w+dc_delay_mode_gap,dc_delay_mode_y,dc_delay_mode_w,dc_delay_mode_h,1,delay_mode,"STEREO",dc_m_delay_mode[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_delay_mode_x+2*(dc_delay_mode_w+dc_delay_mode_gap),dc_delay_mode_y,dc_delay_mode_w,dc_delay_mode_h,2,delay_mode,"PING",dc_m_delay_mode[0],dc_gold_r,dc_gold_g,dc_gold_b);
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.65);
+gfx_x=dc_delay_mode_x; gfx_y=dc_delay_y+52*dc_sc; gfx_drawstr("DELAY MODE");
+
+// --------------------------------------------------
+// SOURCE / OUTPUT PANEL
+// --------------------------------------------------
+dc_source_x=dc_ox+600*dc_sc; dc_source_y=dc_oy+782*dc_sc;
+dc_source_w=550*dc_sc; dc_source_h=176*dc_sc;
+gfx_set(dc_panel_r,dc_panel_g,dc_panel_b,1); gfx_rect(dc_source_x,dc_source_y,dc_source_w,dc_source_h);
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_source_x,dc_source_y,dc_source_w,dc_source_h,0);
+gfx_setfont(1,"Arial",max(9,floor(12*dc_sc)),'b'); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,1);
+gfx_x=dc_source_x+16*dc_sc; gfx_y=dc_source_y+10*dc_sc; gfx_drawstr("SOURCE / OUTPUT");
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_source_x+16*dc_sc,dc_source_y+33*dc_sc,dc_source_w-32*dc_sc,1);
+
+// ReaKit has no file-dropdown API and JSFX does not expose file-slider list
+// enumeration to @gfx. Keep this as a truthful readout; the native Sample
+// slider remains visible until a real browser can replace it.
+strcpy_fromslider(#dc_sample_name,slider1);
+dc_sample_x=dc_source_x+18*dc_sc; dc_sample_y=dc_source_y+51*dc_sc;
+dc_sample_w=300*dc_sc; dc_sample_h=28*dc_sc;
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)));
+gfx_set(0.12,0.12,0.14,1); gfx_rect(dc_sample_x,dc_sample_y,dc_sample_w,dc_sample_h);
+gfx_set(dc_line_r,dc_line_g,dc_line_b,1); gfx_rect(dc_sample_x,dc_sample_y,dc_sample_w,dc_sample_h,0);
+gfx_set(dc_text_r,dc_text_g,dc_text_b,0.9); gfx_x=dc_sample_x+8*dc_sc; gfx_y=dc_sample_y+8*dc_sc; gfx_drawstr(#dc_sample_name);
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.65);
+gfx_x=dc_sample_x; gfx_y=dc_source_y+86*dc_sc; gfx_drawstr("SAMPLE  /  USE NATIVE SELECTOR ABOVE");
+
+dc_output_x=dc_source_x+365*dc_sc; dc_density_x=dc_source_x+460*dc_sc;
+dc_source_cy=dc_source_y+83*dc_sc;
+dc_nv=rk_knob_interact(17,dc_m_output,dc_output_x,dc_source_cy,30*dc_sc,output_db,-60,6,-6,0);
+dc_nv!=output_db ? (output_db=dc_nv; output_gain=10^(output_db/20); dc_automate(10););
+rk_knob_draw(17,dc_output_x,dc_source_cy,30*dc_sc,output_db,-60,6,12/66,dc_m_output[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+dc_nv=rk_knob_interact(11,dc_m_density_spread,dc_density_x,dc_source_cy,24*dc_sc,density_spread,0,1,0,0);
+dc_nv!=density_spread ? (density_spread=dc_nv; dc_automate(31););
+rk_knob_draw(11,dc_density_x,dc_source_cy,24*dc_sc,density_spread,0,1,0,dc_m_density_spread[0],dc_gold_r,dc_gold_g,dc_gold_b,0,dc_panel_r,dc_panel_g,dc_panel_b);
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.9);
+gfx_measurestr("OUTPUT",dc_tw,dc_th); gfx_x=dc_output_x-dc_tw/2; gfx_y=dc_source_y+120*dc_sc; gfx_drawstr("OUTPUT");
+gfx_measurestr("DENSITY SPREAD",dc_tw,dc_th); gfx_x=dc_density_x-dc_tw/2; gfx_y=dc_source_y+114*dc_sc; gfx_drawstr("DENSITY SPREAD");
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc))); gfx_set(dc_gold_r,dc_gold_g,dc_gold_b,0.95);
+gfx_x=dc_output_x-17*dc_sc; gfx_y=dc_source_y+139*dc_sc; gfx_drawnumber(output_db,1); gfx_drawstr(" dB");
+gfx_x=dc_density_x-13*dc_sc; gfx_y=dc_source_y+134*dc_sc; gfx_drawnumber(density_spread*100,0); gfx_drawstr("%");
+
+dc_dir_x=dc_source_x+18*dc_sc; dc_dir_y=dc_source_y+119*dc_sc;
+dc_dir_gap=3*dc_sc; dc_dir_w=58*dc_sc; dc_dir_h=25*dc_sc;
+dc_nv=btn_segment_interact(dc_m_grain_direction,dc_dir_x,dc_dir_y,dc_dir_w,dc_dir_h,4,dc_dir_gap,grain_direction);
+dc_nv!=grain_direction ? (grain_direction=dc_nv; dc_automate_discrete(30););
+btn_segment_draw(dc_dir_x,dc_dir_y,dc_dir_w,dc_dir_h,0,grain_direction,"F",dc_m_grain_direction[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_dir_x+dc_dir_w+dc_dir_gap,dc_dir_y,dc_dir_w,dc_dir_h,1,grain_direction,"B",dc_m_grain_direction[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_dir_x+2*(dc_dir_w+dc_dir_gap),dc_dir_y,dc_dir_w,dc_dir_h,2,grain_direction,"ALT",dc_m_grain_direction[0],dc_gold_r,dc_gold_g,dc_gold_b);
+btn_segment_draw(dc_dir_x+3*(dc_dir_w+dc_dir_gap),dc_dir_y,dc_dir_w,dc_dir_h,3,grain_direction,"RND",dc_m_grain_direction[0],dc_gold_r,dc_gold_g,dc_gold_b);
+gfx_setfont(1,"Arial",max(7,floor(8*dc_sc)),'b'); gfx_set(dc_text_r,dc_text_g,dc_text_b,0.65);
+gfx_x=dc_dir_x; gfx_y=dc_source_y+99*dc_sc; gfx_drawstr("GRAIN DIRECTION");
+
+// Close continuous touch sessions on drag release, wheel steps and resets.
+dc_end_if_released(dc_m_grain_size,3);
+dc_end_if_released(dc_m_density,5);
+dc_end_if_released(dc_m_position_spread,6);
+dc_end_if_released(dc_m_stereo_spread,9);
+dc_end_if_released(dc_m_attack,15);
+dc_end_if_released(dc_m_release,16);
+dc_end_if_released(dc_m_position,4);
+dc_end_if_released(dc_m_scan_speed,7);
+dc_end_if_released(dc_m_sample_start,12);
+dc_end_if_released(dc_m_sample_end,13);
+dc_end_if_released(dc_m_root_note,2);
+dc_end_if_released(dc_m_pitch_spread,14);
+dc_end_if_released(dc_m_fine_tune,33);
+dc_end_if_released(dc_m_reverb_mix,18);
+dc_end_if_released(dc_m_reverb_size,19);
+dc_end_if_released(dc_m_reverb_decay,20);
+dc_end_if_released(dc_m_reverb_damping,21);
+dc_end_if_released(dc_m_shimmer,22);
+dc_end_if_released(dc_m_delay_time_l,24);
+dc_end_if_released(dc_m_delay_time_r,25);
+dc_end_if_released(dc_m_delay_feedback,26);
+dc_end_if_released(dc_m_delay_mix,27);
+dc_end_if_released(dc_m_delay_damping,28);
+dc_end_if_released(dc_m_output,10);
+dc_end_if_released(dc_m_density_spread,31);
+
+dc_prev_lmb = LMB; dc_prev_rmb = RMB; dc_prev_wheel = mouse_wheel;
+
+// The remainder is the untouched v0.26 diagnostic face. Keep it compiled for
+// regression work, but do not paint it over the prototype.
+dc_legacy_gui ? (
 
 gfx_rect(
     0,
@@ -3141,3 +3765,5 @@ active_voices > 0 ? (
         );
     );
 );
+
+); // end remaining frozen v0.26 diagnostic layout

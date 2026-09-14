@@ -11,10 +11,41 @@ from pathlib import Path
 repo = Path(__file__).resolve().parents[1]
 s = (repo/'Effects/DrumCloud/DrumCloud_JS.jsfx').read_text()
 baseline = subprocess.check_output(['git','show','8f5b60b943bfbbe38b4bc7f7b1c05e10f1fd201f:Effects/DrumCloud/DrumCloud_JS.jsfx'], cwd=repo, text=True)
-assert re.findall(r'^slider(?:[1-9]|[12][0-9]|3[0-2]):.*$', s, re.M) == re.findall(r'^slider(?:[1-9]|[12][0-9]|3[0-2]):.*$', baseline, re.M)
+strip_hidden_marker = lambda line: re.sub(r'([>:])-', r'\1', line)
+current_legacy_sliders = re.findall(r'^slider(?:[1-9]|[12][0-9]|3[0-2]):.*$', s, re.M)
+baseline_legacy_sliders = re.findall(r'^slider(?:[1-9]|[12][0-9]|3[0-2]):.*$', baseline, re.M)
+assert list(map(strip_hidden_marker, current_legacy_sliders)) == baseline_legacy_sliders
 # Outside the deliberately changed spawn tuning expression, the entire audio section is unchanged.
 audio = lambda text: text.split('@sample\n')[1].split('@gfx')[0]
 assert audio(s).replace('(grain_detune + fine_tune / 100)', 'grain_detune') == audio(baseline)
+
+# v0.27-dev GUI work must preserve the complete stable v0.26 parameter surface
+# and audio engine byte-for-byte. ReaKit stays an imported dependency.
+stable_026 = subprocess.check_output(['git','show','15b93760f8c86b03ae290d10abf34e4afb14a072:Effects/DrumCloud/DrumCloud_JS.jsfx'], cwd=repo, text=True)
+# A leading '-' on the visible label is JSFX's supported native-slider hiding
+# marker. Ignore only that presentation marker for compatibility comparison.
+current_sliders = re.findall(r'^slider\d+:.*$', s, re.M)
+stable_sliders = re.findall(r'^slider\d+:.*$', stable_026, re.M)
+assert list(map(strip_hidden_marker, current_sliders)) == stable_sliders
+hidden = {int(n) for n in re.findall(r'^slider(\d+):[^\n>]+>-', s, re.M)}
+assert re.search(r'^slider1:.*:Sample$', s, re.M)
+assert hidden == {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                  17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+                  29, 30, 31, 32, 33, 34}
+assert audio(s) == audio(stable_026)
+assert 'import ReaKit/Library/knobs_kbsg.jsfx-inc' in s
+assert 'import ReaKit/Library/buttons_kbsg.jsfx-inc' in s
+for slider_number in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                      17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+                      29, 30, 31, 32, 33, 34):
+    assert (f'dc_automate({slider_number})' in s or
+            f'dc_automate_discrete({slider_number})' in s)
+for slider_number in (2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15, 16,
+                      18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 31, 33):
+    assert (f'dc_end_if_released(dc_m_' in s and
+            f',{slider_number});' in s) or slider_number == 4
+assert 'slider_automate(2 ^ (slider_index - 1), 1)' in s
+print('PASS: v0.26 sliders/audio frozen, 33 custom bindings and native Sample selector present')
 for p in (repo/'Effects/DrumCloud/Presets').iterdir():
     assert p.read_bytes() == subprocess.check_output(['git','show','8f5b60b943bfbbe38b4bc7f7b1c05e10f1fd201f:'+ str(p.relative_to(repo))], cwd=repo)
 assert len(list((repo/'Effects/DrumCloud/Samples').glob('*.wav'))) == 130

@@ -2,6 +2,11 @@
 
 DrumCloud JS is a granular sample instrument for REAPER.
 
+> **Development branch:** `gui/v0.27-dev` adds the first experimental custom
+> interface without changing the v0.26 audio engine or slider layout. It is not
+> a stable release. The prototype requires ReaKit; see
+> [GUI development notes](GUI_DEVELOPMENT.md).
+
 v0.26 adds precise sample tuning and explicit detected-root application.
 See [validation notes](VALIDATION.md) for test coverage and limitations.
 
