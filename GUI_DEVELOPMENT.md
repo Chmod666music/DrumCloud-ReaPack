@@ -94,9 +94,18 @@ click/drag positioning through slider 4.
    watching the corresponding parameter/automation lane.
 4. Write and replay automation for sliders 3, 5, 6, 9, 15 and 16.
 5. Drag inside the waveform and confirm Position (slider 4) still follows.
-6. Resize and embed the FX window; confirm the 800×720 design scales and the
+6. Resize and embed the FX window; confirm the 1180×980 design scales and the
    waveform/grain markers remain aligned.
 7. Temporarily remove/rename the ReaKit install and confirm the resulting import
    error makes the missing dependency obvious; restore it before further tests.
 
 Do not generate `index.xml`, tag, or publish this branch as stable.
+
+## Beta cleanup checkpoint
+
+After the functional and resize tests passed in REAPER, the disabled copy of
+the v0.26 diagnostic `@gfx` code was removed from this development branch. Its
+history remains recoverable from Git checkpoint `61ef213`; no audio, slider or
+preset code was removed. Custom automation now uses explicit parameter bitmasks
+and closes touch gestures on drag release, wheel changes and reset. The user
+confirmed Last Touched behavior after this change.

@@ -1,5 +1,35 @@
 # v0.26 validation and release notes
 
+## v0.27-dev GUI beta validation — 2026-09-14
+
+The GUI work lives only on `gui/v0.27-dev`; v0.26 and the published ReaPack
+index remain unchanged. Automated comparison against source commit
+`15b93760f8c86b03ae290d10abf34e4afb14a072` verifies that all 34 slider numbers,
+variables, defaults, ranges, steps and label text are preserved. A leading `-`
+only hides the 33 parameters with custom equivalents. The native Sample file
+slider remains visible because JSFX does not expose its scanned list to a
+custom dropdown.
+
+The complete `@sample` section is byte-identical to v0.26. Presets, factory
+samples and installer isolation checks pass. Actual EEL detector tests continue
+to pass at 44.1, 48 and 96 kHz, including rejection cases and correction sign.
+
+Confirmed manually in REAPER by the user:
+
+- All GRAIN, MOTION, PITCH, SPACE, DELAY and SOURCE/OUTPUT controls respond.
+- Start/End knobs and waveform boundaries remain synchronized.
+- Native Sample selection loads samples correctly.
+- Window resizing and uniform GUI scaling work.
+- REAPER Last Touched and automation work after explicit slider bitmasks and
+  touch-session completion were applied to all custom controls.
+- Preset changes populate the custom controls and waveform correctly during
+  the GUI development sessions.
+
+The frozen diagnostic v0.26 `@gfx` copy was removed after checkpoint `61ef213`.
+The original implementation remains in Git history. This cleanup did not touch
+the engine. The development version has not been tagged, indexed, pushed or
+published as stable.
+
 Baseline: GitHub main ccbdc0a (index update); JSFX source commit
 8f5b60b943bfbbe38b4bc7f7b1c05e10f1fd201f, version 0.25.
 
