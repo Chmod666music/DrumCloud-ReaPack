@@ -1,8 +1,8 @@
 desc: DrumCloud JS
-version: 0.27-dev
+version: 0.27
 author: Chmod666music
 changelog:
-  Add an experimental ReaKit GRAIN interface with a dark and gold theme.
+  Add a complete dark and gold ReaKit interface with automation-safe custom controls.
   Add Sample Fine Tune and explicit detected-root/tuning apply actions.
   Refine multi-region pitch estimates with fractional-lag cents readout.
   Add user-sample folder groundwork and portable development installation.
@@ -211,7 +211,7 @@ slider33:fine_tune=0<-100,100,0.1>-Sample Fine Tune (cents)
 slider34:apply_tuning=0<0,2,1{Idle,Apply Root Only,Apply Root + Tune}>-Apply Detected Tuning
 
 // ReaKit is a separate ReaPack dependency. Its public knob dispatcher provides
-// the Serum and Encoder styles used by the experimental v0.27-dev interface.
+// the Serum and Encoder styles used by the v0.27 interface.
 import ReaKit/Library/knobs_kbsg.jsfx-inc
 import ReaKit/Library/buttons_kbsg.jsfx-inc
 
@@ -2309,7 +2309,7 @@ spl1 =
 @gfx 1180 980
 
 // ==================================================
-// v0.27-dev REAKIT PROTOTYPE
+// v0.27 REAKIT GUI
 // ==================================================
 
 // ReaKit's public dispatcher expects these per-frame input globals.
@@ -2350,7 +2350,7 @@ gfx_drawstr("DRUMCLOUD");
 gfx_setfont(1, "Arial", max(8, floor(10 * dc_sc)), 'b');
 gfx_set(dc_gold_r, dc_gold_g, dc_gold_b, 1);
 gfx_x = dc_ox + 30 * dc_sc; gfx_y = dc_oy + 55 * dc_sc;
-gfx_drawstr("v0.27-dev  /  REAKIT GUI PROTOTYPE");
+gfx_drawstr("v0.27  /  REAKIT GUI");
 
 gfx_setfont(1, "Arial", max(8, floor(10 * dc_sc)));
 gfx_set(dc_text_r, dc_text_g, dc_text_b, 0.65);

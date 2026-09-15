@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.27
+- Add a scalable dark charcoal/navy interface with a unified gold accent.
+- Add ReaKit Serum-style primary knobs and Encoder-style helper controls.
+- Add complete GRAIN, MOTION, PITCH, SPACE, DELAY and SOURCE/OUTPUT panels.
+- Preserve the custom waveform and grain visualization with direct positioning.
+- Keep every existing slider number, range, default and order compatible.
+- Add REAPER Last Touched and automation-safe gestures to all custom controls.
+- Keep the native Sample selector as the reliable source-loading control.
+- Import ReaKit 1.3.0 as a separate ReaPack-installed dependency.
+- Preserve the v0.26 audio engine and factory preset bank unchanged.
+
 ## 0.26
 - Show persistent detection feedback above the waveform so it is visible on short screens.
 - Append default-zero Sample Fine Tune (slider 33), without reordering parameters.

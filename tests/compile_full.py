@@ -4,7 +4,10 @@ p=Path(__file__).resolve().parents[1]/'Effects/DrumCloud/DrumCloud_JS.jsfx'
 s=p.read_text().split('@init\n',1)[1]
 s=re.sub(r'^@[^\n]*','',s,flags=re.M)
 s=re.sub(r'//[^\n]*','',s)
-host={'file_avail','file_close','file_mem','file_open','file_riff','gfx_circle','gfx_drawnumber','gfx_drawstr','gfx_line','gfx_rect','gfx_set','gfx_setfont','gfx_triangle','midirecv','slider_automate','sliderchange','strcpy_fromslider'}
+host={'file_avail','file_close','file_mem','file_open','file_riff','gfx_circle','gfx_drawnumber','gfx_drawstr','gfx_getchar','gfx_line','gfx_measurestr','gfx_rect','gfx_set','gfx_setfont','gfx_triangle','midirecv','slider_automate','sliderchange','strcpy_fromslider'}
+# Imported ReaKit functions are supplied by REAPER before @init. Stub their
+# call sites here because this standalone compiler intentionally strips imports.
+host.update(re.findall(r'\b((?:rk_|btn_)[A-Za-z]\w*)\s*\(', s))
 stubs={}
 for m in reversed(list(re.finditer(r'\b('+'|'.join(host)+r')\s*\(',s))):
     start=m.end(); depth=1; pos=start; commas=0; quote=False

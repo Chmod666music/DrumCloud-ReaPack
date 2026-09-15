@@ -1,9 +1,9 @@
-# v0.26 validation and release notes
+# DrumCloud validation and release notes
 
-## v0.27-dev GUI beta validation — 2026-09-14
+## v0.27 GUI release validation — 2026-09-15
 
-The GUI work lives only on `gui/v0.27-dev`; v0.26 and the published ReaPack
-index remain unchanged. Automated comparison against source commit
+v0.27 promotes the completed GUI from `gui/v0.27-dev` while retaining v0.26 as
+the frozen compatibility baseline. Automated comparison against source commit
 `15b93760f8c86b03ae290d10abf34e4afb14a072` verifies that all 34 slider numbers,
 variables, defaults, ranges, steps and label text are preserved. A leading `-`
 only hides the 33 parameters with custom equivalents. The native Sample file
@@ -27,8 +27,8 @@ Confirmed manually in REAPER by the user:
 
 The frozen diagnostic v0.26 `@gfx` copy was removed after checkpoint `61ef213`.
 The original implementation remains in Git history. This cleanup did not touch
-the engine. The development version has not been tagged, indexed, pushed or
-published as stable.
+the engine. The resulting v0.27 source was promoted only after the listed host
+checks passed.
 
 Baseline: GitHub main ccbdc0a (index update); JSFX source commit
 8f5b60b943bfbbe38b4bc7f7b1c05e10f1fd201f, version 0.25.
@@ -88,7 +88,7 @@ python3 tests/compile_full.py /path/to/loose_eel
 
 ## Publish
 
-The JSFX version/changelog/provides metadata declares 0.26. After a release
+The JSFX version/changelog/provides metadata declares 0.27. After the release
 commit reaches main, the GitHub workflow runs reapack-index --rebuild and publishes the index
 with real committed source URLs, including the User Samples README. No
 unpublished or invented commit URLs have been inserted into the index.

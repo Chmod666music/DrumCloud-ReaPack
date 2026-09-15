@@ -19,7 +19,7 @@ assert list(map(strip_hidden_marker, current_legacy_sliders)) == baseline_legacy
 audio = lambda text: text.split('@sample\n')[1].split('@gfx')[0]
 assert audio(s).replace('(grain_detune + fine_tune / 100)', 'grain_detune') == audio(baseline)
 
-# v0.27-dev GUI work must preserve the complete stable v0.26 parameter surface
+# v0.27 GUI work must preserve the complete stable v0.26 parameter surface
 # and audio engine byte-for-byte. ReaKit stays an imported dependency.
 stable_026 = subprocess.check_output(['git','show','15b93760f8c86b03ae290d10abf34e4afb14a072:Effects/DrumCloud/DrumCloud_JS.jsfx'], cwd=repo, text=True)
 # A leading '-' on the visible label is JSFX's supported native-slider hiding

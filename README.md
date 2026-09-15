@@ -1,13 +1,11 @@
-# DrumCloud JS v0.26
+# DrumCloud JS v0.27
 
 DrumCloud JS is a granular sample instrument for REAPER.
 
-> **Development branch:** `gui/v0.27-dev` adds the first experimental custom
-> interface without changing the v0.26 audio engine or slider layout. It is not
-> a stable release. The prototype requires ReaKit; see
-> [GUI development notes](GUI_DEVELOPMENT.md).
-
-v0.26 adds precise sample tuning and explicit detected-root application.
+v0.27 adds a complete dark-and-gold ReaKit interface while preserving the
+v0.26 audio engine, slider numbering, presets, saved states and automation.
+It includes custom GRAIN, MOTION, PITCH, SPACE, DELAY and SOURCE/OUTPUT panels,
+plus REAPER Last Touched support for all custom controls.
 See [validation notes](VALIDATION.md) for test coverage and limitations.
 
 This repository is a ReaPack repository. Installing the package installs the
@@ -21,8 +19,14 @@ JSFX instrument, its CC0 factory samples, and a 46-preset factory bank.
    `https://raw.githubusercontent.com/Chmod666music/DrumCloud-ReaPack/main/index.xml`
 
 3. Synchronize packages.
-4. Find and install **DrumCloud JS**.
-5. Add `JS: DrumCloud JS` to a track and send it MIDI.
+4. Find and install **ReaKit** (tested with version 1.3.0).
+5. Find and install **DrumCloud JS**.
+6. Add `JS: DrumCloud JS` to a track and send it MIDI.
+
+ReaKit is required by the v0.27 interface and is imported from its normal
+ReaPack installation. DrumCloud does not bundle or duplicate the library. If
+REAPER reports a missing `ReaKit/Library` import, install or update ReaKit and
+then reopen or rescan DrumCloud JS.
 
 ### Install the factory presets
 
@@ -41,6 +45,7 @@ repository/category prefix, for example
 ## Features
 
 - Granular sample playback with MIDI pitch
+- Dark-and-gold scalable ReaKit interface with automation-safe controls
 - Waveform display and click/drag positioning
 - Grain size, density, position spread and stereo spread
 - Animated grain markers
@@ -65,7 +70,7 @@ installed in `Data/DrumCloud/SAMPLE_CREDITS_AND_LICENSE.md`.
 - DrumCloud JS source code: [MIT](LICENSE)
 - Factory samples: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
 
-## v0.26 tuning
+## v0.26 tuning retained in v0.27
 
 Sample Fine Tune is appended as slider 33: -100 to +100 cents, default 0.
 Positive values raise pitch. Zero preserves v0.25 playback. All new grains,
@@ -102,7 +107,7 @@ in REAPER, especially when switching from a newly tuned state to an older preset
 ## User samples
 
 `Data/DrumCloud/User Samples/` is reserved/documented in v0.26. Separate selectors,
-Factory/User tabs and custom-folder browsing are deferred to the GUI overhaul.
+Factory/User tabs and custom-folder browsing remain planned for a future release.
 The original Sample slider and factory paths are unchanged. For current playback,
 place a uniquely named WAV directly in `Data/DrumCloud`, reopen the effect and
 select it. Keep originals in User Samples if useful. Do not assume the native

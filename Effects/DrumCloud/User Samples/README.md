@@ -11,4 +11,4 @@ and select it using Sample. Keep your master copy here if desired.
 Use Detect Root, inspect the confidence, then explicitly Apply Root + Tune.
 No filename-based factory root mapping is promised for user audio.
 
-Full custom folder browsing is deferred to the GUI overhaul.
+Full custom folder browsing remains planned for a future release.
