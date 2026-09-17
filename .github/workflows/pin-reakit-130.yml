@@ -1,0 +1,57 @@
+name: Pin ReaKit 1.3.0 for DrumCloud v0.27.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pin-reakit-130.yml
+
+permissions:
+  contents: write
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository history
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Replace bundled files with exact ReaKit 1.3.0 sources
+        run: |
+          set -euo pipefail
+          base=https://raw.githubusercontent.com/mequaz-sudo/ReaKit/04996cc3f86a2b7098e50fc7cfdf0ae561e69ee4
+          curl -fsSL "$base/Library/knobs_kbsg.jsfx-inc" -o Effects/DrumCloud/ReaKit/Library/knobs_kbsg.jsfx-inc
+          curl -fsSL "$base/Library/buttons_kbsg.jsfx-inc" -o Effects/DrumCloud/ReaKit/Library/buttons_kbsg.jsfx-inc
+          curl -fsSL "$base/LICENSE" -o Effects/DrumCloud/ReaKit/LICENSE.txt
+          curl -fsSL "$base/THIRD_PARTY_CREDITS.md" -o Effects/DrumCloud/ReaKit/THIRD_PARTY_CREDITS.md
+          grep -q 'function rk_knob_draw' Effects/DrumCloud/ReaKit/Library/knobs_kbsg.jsfx-inc
+          grep -q 'function btn_segment_draw' Effects/DrumCloud/ReaKit/Library/buttons_kbsg.jsfx-inc
+
+      - name: Commit exact pinned ReaKit sources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/pin-reakit-130.yml
+          git add Effects/DrumCloud/ReaKit
+          git commit -m "Pin bundled ReaKit controls to upstream 1.3.0"
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Install ReaPack indexer
+        run: gem install reapack-index
+
+      - name: Amend v0.27.1 index sources to pinned files
+        run: |
+          reapack-index --rebuild --amend --no-commit .
+          if [ -n "$(git status --porcelain index.xml)" ]; then
+            git add index.xml
+            git commit -m "Amend v0.27.1 ReaPack sources for pinned ReaKit 1.3.0"
+          fi
+
+      - name: Push hotfix amendment
+        run: git push
