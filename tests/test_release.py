@@ -20,7 +20,7 @@ audio = lambda text: text.split('@sample\n')[1].split('@gfx')[0]
 assert audio(s).replace('(grain_detune + fine_tune / 100)', 'grain_detune') == audio(baseline)
 
 # v0.27 GUI work must preserve the complete stable v0.26 parameter surface
-# and audio engine byte-for-byte. ReaKit stays an imported dependency.
+# and audio engine byte-for-byte. ReaKit imports now resolve to bundled local files.
 stable_026 = subprocess.check_output(['git','show','15b93760f8c86b03ae290d10abf34e4afb14a072:Effects/DrumCloud/DrumCloud_JS.jsfx'], cwd=repo, text=True)
 # A leading '-' on the visible label is JSFX's supported native-slider hiding
 # marker. Ignore only that presentation marker for compatibility comparison.
@@ -35,6 +35,9 @@ assert hidden == {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 assert audio(s) == audio(stable_026)
 assert 'import ReaKit/Library/knobs_kbsg.jsfx-inc' in s
 assert 'import ReaKit/Library/buttons_kbsg.jsfx-inc' in s
+assert (repo/'Effects/DrumCloud/ReaKit/Library/knobs_kbsg.jsfx-inc').is_file()
+assert (repo/'Effects/DrumCloud/ReaKit/Library/buttons_kbsg.jsfx-inc').is_file()
+assert (repo/'Effects/DrumCloud/ReaKit/LICENSE.txt').is_file()
 for slider_number in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
                       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
                       29, 30, 31, 32, 33, 34):
@@ -64,6 +67,8 @@ with tempfile.TemporaryDirectory() as t:
     m.install(repo, r, True)
     assert user.read_bytes() == b'keep'
     assert len(list((r/'Effects').rglob('*.jsfx'))) == 1
+    assert (r/'Effects/DrumCloud/ReaKit/Library/knobs_kbsg.jsfx-inc').is_file()
+    assert (r/'Effects/DrumCloud/ReaKit/Library/buttons_kbsg.jsfx-inc').is_file()
     assert len(list((r/'DrumCloud-dev-backups').rglob('DrumCloud_JS.jsfx'))) == 1
     assert not (r/'Effects/DrumCloud-ReaPack').exists()
 print('PASS: installer duplicate refusal, archive, one FX, user file preserved')

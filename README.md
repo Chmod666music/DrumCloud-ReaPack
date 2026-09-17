@@ -1,11 +1,12 @@
-# DrumCloud JS v0.27
+# DrumCloud JS v0.27.1
 
 DrumCloud JS is a granular sample instrument for REAPER.
 
-v0.27 adds a complete dark-and-gold ReaKit interface while preserving the
+v0.27.1 keeps the complete dark-and-gold ReaKit interface while preserving the
 v0.26 audio engine, slider numbering, presets, saved states and automation.
-It includes custom GRAIN, MOTION, PITCH, SPACE, DELAY and SOURCE/OUTPUT panels,
-plus REAPER Last Touched support for all custom controls.
+The required ReaKit GUI controls are now bundled with DrumCloud, so there is no
+separate ReaKit dependency to install. GRAIN, MOTION, PITCH, SPACE, DELAY and
+SOURCE/OUTPUT panels plus REAPER Last Touched support are unchanged.
 See [validation notes](VALIDATION.md) for test coverage and limitations.
 
 This repository is a ReaPack repository. Installing the package installs the
@@ -19,14 +20,15 @@ JSFX instrument, its CC0 factory samples, and a 46-preset factory bank.
    `https://raw.githubusercontent.com/Chmod666music/DrumCloud-ReaPack/main/index.xml`
 
 3. Synchronize packages.
-4. Find and install **ReaKit** (tested with version 1.3.0).
-5. Find and install **DrumCloud JS**.
-6. Add `JS: DrumCloud JS` to a track and send it MIDI.
+4. Find and install **DrumCloud JS**.
+5. Add `JS: DrumCloud JS` to a track and send it MIDI.
 
-ReaKit is required by the v0.27 interface and is imported from its normal
-ReaPack installation. DrumCloud does not bundle or duplicate the library. If
-REAPER reports a missing `ReaKit/Library` import, install or update ReaKit and
-then reopen or rescan DrumCloud JS.
+Starting with v0.27.1, DrumCloud is self-contained: the small ReaKit subset used
+by its interface is installed inside the DrumCloud effect folder. You do not
+need to add the ReaKit repository or install ReaKit separately. Existing ReaKit
+installations can remain installed; DrumCloud simply uses its pinned local copy.
+
+If you are updating from v0.27, synchronize packages and update DrumCloud JS.
 
 ### Install the factory presets
 
@@ -68,9 +70,13 @@ installed in `Data/DrumCloud/SAMPLE_CREDITS_AND_LICENSE.md`.
 ## Licenses
 
 - DrumCloud JS source code: [MIT](LICENSE)
+- Bundled ReaKit GUI subset: MIT, Copyright (c) 2026 EON Studios; see `Effects/DrumCloud/ReaKit/LICENSE.txt` and the bundled third-party credits
 - Factory samples: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
 
-## v0.26 tuning retained in v0.27
+ReaKit was created by EON Studios / mequaz-sudo. Upstream project:
+https://github.com/mequaz-sudo/ReaKit
+
+## v0.26 tuning retained in v0.27.1
 
 Sample Fine Tune is appended as slider 33: -100 to +100 cents, default 0.
 Positive values raise pitch. Zero preserves v0.25 playback. All new grains,
@@ -124,8 +130,9 @@ python3 tools/install_dev.py "/path/from/REAPER/Options/Show-REAPER-resource-pat
 ```
 
 The installer reads ReaPack's registry and updates its existing instrument path.
-Without a registered installation, it uses `Effects/DrumCloud`. It copies only
-factory data to `Data/DrumCloud` and the preset action to `Scripts/DrumCloud`.
+Without a registered installation, it uses `Effects/DrumCloud`. It copies the
+main JSFX plus its bundled `ReaKit` folder beside it, factory data to
+`Data/DrumCloud`, and the preset action to `Scripts/DrumCloud`.
 Existing files are backed up outside Effects; user audio and installed preset
 banks are kept. A registered `Effects/DrumCloud-ReaPack` directory is legitimate
 and is never archived. If that directory is unregistered and contains the

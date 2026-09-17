@@ -1,4 +1,4 @@
-# DrumCloud v0.27 ReaKit GUI
+# DrumCloud v0.27.1 ReaKit GUI
 
 v0.27 keeps v0.26 frozen as the audio/preset compatibility baseline. The GUI
 changes JSFX metadata and `@gfx` only, plus six persistent GUI-memory
@@ -6,16 +6,18 @@ blocks in unused addresses 512–607. It does not change `@block` or `@sample`.
 
 ## ReaKit dependency
 
-Install **ReaKit** with ReaPack before loading DrumCloud v0.27. The
-JSFX imports the installed library directly:
+Starting with v0.27.1, DrumCloud vendors the small ReaKit subset it actually
+uses under `Effects/DrumCloud/ReaKit/Library/`. The existing imports remain:
 
 ```eel
 import ReaKit/Library/knobs_kbsg.jsfx-inc
+import ReaKit/Library/buttons_kbsg.jsfx-inc
 ```
 
-The interface was developed against ReaKit 1.3.0. In REAPER, use
-**Extensions → ReaPack → Browse packages**, find ReaKit, install it, then reopen
-or rescan the DrumCloud JSFX. Do not copy the library into this repository.
+REAPER resolves those files beside the JSFX, so users no longer need a separate
+ReaKit install. The copy is intentionally pinned: GUI behavior cannot change
+under an existing DrumCloud release when upstream ReaKit updates. ReaKit is MIT
+licensed by EON Studios; the license and attribution ship beside the subset.
 
 ReaKit's supported `rk_knob_draw` API accepts accent RGB values (`cr`, `cg`,
 `cb`). Serum style 17 applies them to its active arc and pointer. Encoder style
@@ -86,8 +88,8 @@ click/drag positioning through slider 4.
 
 ## Manual checks in REAPER
 
-1. Confirm the effect compiles with ReaKit installed and reports
-   `v0.27 / REAKIT GUI`.
+1. Confirm the effect compiles with no separate ReaKit installation and reports
+   `v0.27.1 / REAKIT GUI`.
 2. Load an existing v0.26 preset and compare its sound and all 34 parameter
    values with v0.26.
 3. Drag, Ctrl-drag, Shift-drag, wheel and double-click each GRAIN control while
@@ -96,8 +98,8 @@ click/drag positioning through slider 4.
 5. Drag inside the waveform and confirm Position (slider 4) still follows.
 6. Resize and embed the FX window; confirm the 1180×980 design scales and the
    waveform/grain markers remain aligned.
-7. Temporarily remove/rename the ReaKit install and confirm the resulting import
-   error makes the missing dependency obvious; restore it before further tests.
+7. Temporarily remove/rename any separately installed ReaKit and confirm DrumCloud
+   still opens with the complete GUI from its bundled local copy.
 
 ## Release cleanup checkpoint
 

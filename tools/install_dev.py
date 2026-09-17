@@ -43,6 +43,9 @@ def install(repo, resource, archive_duplicate=False):
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     backup = resource / "DrumCloud-dev-backups" / stamp
     pairs = [(source / "DrumCloud_JS.jsfx", target)]
+    bundled_reakit = source / "ReaKit"
+    pairs += [(p, target.parent / "ReaKit" / p.relative_to(bundled_reakit))
+              for p in bundled_reakit.rglob("*") if p.is_file()]
     pairs += [(p, resource / "Data" / "DrumCloud" / p.name) for p in (source / "Samples").iterdir() if p.is_file()]
     pairs += [(source / "User Samples" / "README.md", resource / "Data" / "DrumCloud" / "User Samples" / "README.md")]
     pairs += [(source / "Presets" / "DrumCloud_v0.23_46_Factory_Presets.ini", resource / "Data" / "DrumCloud" / "DrumCloud_v0.23_46_Factory_Presets.ini"),
