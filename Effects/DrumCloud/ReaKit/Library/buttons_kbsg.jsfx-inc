@@ -1,0 +1,114 @@
+// ReaKit button subset bundled with DrumCloud JS v0.27.1.
+// Derived from ReaKit 1.3.x by EON Studios, MIT licensed.
+// Upstream: https://github.com/mequaz-sudo/ReaKit
+// Includes the pill and segmented selectors used by DrumCloud.
+// See ../LICENSE.txt and ../THIRD_PARTY_CREDITS.md.
+
+@init
+__buttons_kbsg_loaded = 1;
+
+function clamp(x, lo, hi) ( min(max(x, lo), hi); );
+function lerp(a, b, t) ( a + (b - a) * t; );
+function dist(x1, y1, x2, y2) ( sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)); );
+function sign_of(x) ( x < 0 ? -1 : x > 0 ? 1 : 0; );
+
+btn_body_r    = 0.22; btn_body_g    = 0.22; btn_body_b    = 0.24;
+btn_body_hi_r = 0.28; btn_body_hi_g = 0.28; btn_body_hi_b = 0.30;
+btn_housing_r = 0.12; btn_housing_g = 0.12; btn_housing_b = 0.14;
+btn_frame_r   = 0.35; btn_frame_g   = 0.35; btn_frame_b   = 0.38;
+function btn_set_body(r,g,b)    ( btn_body_r=r; btn_body_g=g; btn_body_b=b; );
+function btn_set_body_hi(r,g,b) ( btn_body_hi_r=r; btn_body_hi_g=g; btn_body_hi_b=b; );
+function btn_set_housing(r,g,b) ( btn_housing_r=r; btn_housing_g=g; btn_housing_b=b; );
+function btn_set_frame(r,g,b)   ( btn_frame_r=r; btn_frame_g=g; btn_frame_b=b; );
+
+function btn_pill_draw(x, y, w, h, state, label, hover_t, cr, cg, cb)
+local(ht, rad, glow_a, tw, th)
+(
+  ht = pow(hover_t, 2);
+  rad = min(h / 2, 8);
+  gfx_set(btn_housing_r, btn_housing_g, btn_housing_b, 1);
+  gfx_rect(x, y, w, h);
+  state ? (
+    glow_a = lerp(0.7, 1.0, ht);
+    gfx_set(cr * 0.3, cg * 0.3, cb * 0.3, glow_a);
+    gfx_rect(x + 2, y + 2, w - 4, h - 4);
+    gfx_set(cr, cg, cb, glow_a * 0.5);
+    gfx_rect(x + 4, y + 4, w - 8, h - 8);
+    gfx_set(cr, cg, cb, glow_a * 0.8);
+    gfx_roundrect(x, y, w, h, rad, 1);
+  ) : (
+    gfx_set(lerp(0.25, 0.35, ht), lerp(0.25, 0.35, ht), lerp(0.28, 0.38, ht), 1);
+    gfx_roundrect(x, y, w, h, rad, 1);
+  );
+  state ? gfx_set(1, 1, 1, 1) : gfx_set(lerp(0.45, 0.65, ht), lerp(0.45, 0.65, ht), lerp(0.45, 0.65, ht), 1);
+  gfx_measurestr(label, tw, th);
+  gfx_x = x + (w - tw) / 2;
+  gfx_y = y + (h - th) / 2;
+  gfx_drawstr(label);
+);
+
+function btn_pill_interact(mem, x, y, w, h, cur_state)
+local(hover, new_state)
+(
+  hover = (mx >= x && mx <= x + w && my >= y && my <= y + h);
+  hover ? ( mem[0] = min(mem[0] + dt * hv_speed, 1); )
+        : ( mem[0] = max(mem[0] - dt * hv_speed, 0); );
+  mem[6] = hover;
+  new_state = cur_state;
+  mem[5] = 0;
+  lmb_down && hover ? ( new_state = !cur_state; mem[5] = 1; );
+  new_state;
+);
+
+// Segmented selector. This style derives from Spice; see bundled credits.
+function btn_segment_draw(x, y, w, h, idx, active, label, hover_t,
+                           on_r, on_g, on_b)
+local(ht, sel, br, bg, bb, tw, th)
+(
+  ht = pow(hover_t, 2);
+  sel = (idx == active);
+  sel ? (
+    br = on_r; bg = on_g; bb = on_b;
+  ) : (
+    br = lerp(btn_body_r - 0.02, btn_body_hi_r, ht);
+    bg = lerp(btn_body_g - 0.02, btn_body_hi_g, ht);
+    bb = lerp(btn_body_b - 0.02, btn_body_hi_b, ht);
+  );
+  gfx_set(br, bg, bb, 1);
+  gfx_rect(x, y, w, h);
+  gfx_set(0.45, 0.45, 0.48, lerp(0.4, 0.7, ht));
+  gfx_rect(x, y, w, h, 0);
+  sel ? (
+    gfx_set(on_r, on_g, on_b, 1);
+    gfx_rect(x + 1, y + h - 3, w - 2, 2);
+  );
+  sel ? gfx_set(0, 0, 0, 1) : gfx_set(lerp(0.5, 0.75, ht), lerp(0.5, 0.75, ht), lerp(0.5, 0.75, ht), 1);
+  gfx_measurestr(label, tw, th);
+  gfx_x = x + (w - tw) / 2;
+  gfx_y = y + (h - th) / 2;
+  gfx_drawstr(label);
+);
+
+function btn_segment_interact(mem, x, y, seg_w, h, n_segs, gap, cur_val)
+local(hover, total_w, new_val, i, sx)
+(
+  total_w = n_segs * seg_w + (n_segs - 1) * gap;
+  hover = (mx >= x && mx <= x + total_w && my >= y && my <= y + h);
+  hover ? ( mem[0] = min(mem[0] + dt * hv_speed, 1); )
+        : ( mem[0] = max(mem[0] - dt * hv_speed, 0); );
+  mem[6] = hover;
+  new_val = cur_val;
+  mem[5] = 0;
+  lmb_down && hover ? (
+    i = 0;
+    loop(n_segs,
+      sx = x + i * (seg_w + gap);
+      (mx >= sx && mx <= sx + seg_w) ? (
+        new_val = i;
+        mem[5] = 1;
+      );
+      i += 1;
+    );
+  );
+  new_val;
+);
