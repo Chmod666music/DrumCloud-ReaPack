@@ -61,6 +61,8 @@ metadata = s.split('provides:\n', 1)[1].split('\nslider1:', 1)[0]
 assert 'ReaKit/Library/*' in metadata
 assert 'ReaKit/LICENSE.txt' in metadata
 assert 'ReaKit/THIRD_PARTY_CREDITS.md' in metadata
+assert 'ReaKit ReaPack repository https://raw.githubusercontent.com/mequaz-sudo/ReaKit/main/index.xml' in s
+assert 'Report an issue https://github.com/Chmod666music/DrumCloud-ReaPack/issues' in s
 index = ET.parse(repo/'index.xml')
 release = index.find(".//version[@name='0.27.1']")
 assert release is not None

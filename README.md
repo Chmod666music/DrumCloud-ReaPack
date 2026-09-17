@@ -23,12 +23,33 @@ JSFX instrument, its CC0 factory samples, and a 46-preset factory bank.
 4. Find and install **DrumCloud JS**.
 5. Add `JS: DrumCloud JS` to a track and send it MIDI.
 
-Starting with v0.27.1, DrumCloud is self-contained: the small ReaKit subset used
-by its interface is installed inside the DrumCloud effect folder. You do not
+Starting with v0.27.1, DrumCloud is self-contained: the two ReaKit libraries used
+by its interface are installed inside the DrumCloud effect folder. You do not
 need to add the ReaKit repository or install ReaKit separately. Existing ReaKit
 installations can remain installed; DrumCloud simply uses its pinned local copy.
 
 If you are updating from v0.27, synchronize packages and update DrumCloud JS.
+
+### If the custom GUI is still missing
+
+The native Sample selector without the dark-and-gold interface normally means
+REAPER is still loading the older v0.27 package or the v0.27.1 support files did
+not install completely.
+
+1. In ReaPack, choose **Synchronize packages**.
+2. Confirm that **DrumCloud JS 0.27.1** is installed, then reinstall it if needed.
+3. Close and reopen the effect, or restart REAPER.
+
+DrumCloud does not require a separate ReaKit installation. For comparison,
+updates or direct ReaKit support, these are the official links:
+
+- [ReaKit project and documentation](https://github.com/mequaz-sudo/ReaKit)
+- [ReaKit ReaPack repository URL](https://raw.githubusercontent.com/mequaz-sudo/ReaKit/main/index.xml)
+
+Installing the full ReaKit package is optional and should not be necessary for
+DrumCloud v0.27.1. If the GUI is still missing after reinstalling DrumCloud,
+please report the REAPER version, operating system and the exact error message
+in the [DrumCloud issue tracker](https://github.com/Chmod666music/DrumCloud-ReaPack/issues).
 
 ### Install the factory presets
 
@@ -70,11 +91,12 @@ installed in `Data/DrumCloud/SAMPLE_CREDITS_AND_LICENSE.md`.
 ## Licenses
 
 - DrumCloud JS source code: [MIT](LICENSE)
-- Bundled ReaKit GUI subset: MIT, Copyright (c) 2026 EON Studios; see `Effects/DrumCloud/ReaKit/LICENSE.txt` and the bundled third-party credits
+- Bundled ReaKit GUI libraries: MIT, Copyright (c) 2026 EON Studios; see `Effects/DrumCloud/ReaKit/LICENSE.txt` and the bundled third-party credits
 - Factory samples: [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
 
-ReaKit was created by EON Studios / mequaz-sudo. Upstream project:
-https://github.com/mequaz-sudo/ReaKit
+ReaKit was created by EON Studios / mequaz-sudo. See the
+[upstream project](https://github.com/mequaz-sudo/ReaKit) and its
+[ReaPack repository](https://raw.githubusercontent.com/mequaz-sudo/ReaKit/main/index.xml).
 
 ## v0.26 tuning retained in v0.27.1
 

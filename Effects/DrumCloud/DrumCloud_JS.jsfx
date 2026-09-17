@@ -39,6 +39,8 @@ links:
   REVERBERA sound pack https://freesound.org/people/REVERBERA/packs/45512/
   Documentation https://github.com/Chmod666music/DrumCloud-ReaPack/blob/main/README.md
   ReaKit upstream https://github.com/mequaz-sudo/ReaKit
+  ReaKit ReaPack repository https://raw.githubusercontent.com/mequaz-sudo/ReaKit/main/index.xml
+  Report an issue https://github.com/Chmod666music/DrumCloud-ReaPack/issues
 provides:
   ReaKit/Library/*
   ReaKit/LICENSE.txt
