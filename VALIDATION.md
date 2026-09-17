@@ -1,5 +1,20 @@
 # DrumCloud validation and release notes
 
+## v0.27.1 self-contained GUI hotfix — 2026-09-17
+
+v0.27.1 vendors the two exact ReaKit 1.3.0 libraries used by DrumCloud. They
+provide the Serum and Encoder knobs plus the pill and segmented buttons used by
+the interface and are pinned at upstream commit
+`04996cc3f86a2b7098e50fc7cfdf0ae561e69ee4`. Both local includes are standalone,
+so the dependency closure contains no further runtime imports.
+
+Automated validation resolves every `ReaKit/` import beneath the installed
+DrumCloud effect directory, rejects transitive imports in the vendored files,
+and checks that the v0.27.1 entry in `index.xml` installs both includes, the MIT
+license and third-party credits. The existing v0.26 comparison still verifies
+that all 34 sliders and the complete `@sample` audio section are unchanged.
+The 46 factory presets remain byte-identical to their baseline.
+
 ## v0.27 GUI release validation — 2026-09-15
 
 v0.27 promotes the completed GUI from `gui/v0.27-dev` while retaining v0.26 as
@@ -88,7 +103,8 @@ python3 tests/compile_full.py /path/to/loose_eel
 
 ## Publish
 
-The JSFX version/changelog/provides metadata declares 0.27. After the release
+The JSFX version/changelog/provides metadata declares 0.27.1. After the release
 commit reaches main, the GitHub workflow runs reapack-index --rebuild and publishes the index
-with real committed source URLs, including the User Samples README. No
+with real committed source URLs, including the local ReaKit dependency closure,
+license, credits and User Samples README. No
 unpublished or invented commit URLs have been inserted into the index.

@@ -6,6 +6,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 repo = Path(__file__).resolve().parents[1]
@@ -33,11 +34,42 @@ assert hidden == {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
                   17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
                   29, 30, 31, 32, 33, 34}
 assert audio(s) == audio(stable_026)
-assert 'import ReaKit/Library/knobs_kbsg.jsfx-inc' in s
-assert 'import ReaKit/Library/buttons_kbsg.jsfx-inc' in s
-assert (repo/'Effects/DrumCloud/ReaKit/Library/knobs_kbsg.jsfx-inc').is_file()
-assert (repo/'Effects/DrumCloud/ReaKit/Library/buttons_kbsg.jsfx-inc').is_file()
-assert (repo/'Effects/DrumCloud/ReaKit/LICENSE.txt').is_file()
+reakit_imports = re.findall(r'^\s*import\s+(ReaKit/\S+)\s*$', s, re.M)
+assert reakit_imports == [
+    'ReaKit/Library/knobs_kbsg.jsfx-inc',
+    'ReaKit/Library/buttons_kbsg.jsfx-inc',
+]
+reakit_root = repo/'Effects/DrumCloud/ReaKit'
+for import_path in reakit_imports:
+    target = repo/'Effects/DrumCloud'/import_path
+    assert target.is_file(), f'missing local include: {target}'
+    # The vendored subset is the complete dependency closure: neither include
+    # imports another file, so no separately installed ReaKit can be consulted.
+    assert not re.search(r'^\s*import\s+', target.read_text(), re.M)
+assert (reakit_root/'LICENSE.txt').is_file()
+assert (reakit_root/'THIRD_PARTY_CREDITS.md').is_file()
+
+# ReaPack must install the complete local closure and its licensing files in
+# the same effect directory where the relative imports resolve.
+provided_reakit = {
+    'ReaKit/Library/buttons_kbsg.jsfx-inc',
+    'ReaKit/Library/knobs_kbsg.jsfx-inc',
+    'ReaKit/LICENSE.txt',
+    'ReaKit/THIRD_PARTY_CREDITS.md',
+}
+metadata = s.split('provides:\n', 1)[1].split('\nslider1:', 1)[0]
+assert 'ReaKit/Library/*' in metadata
+assert 'ReaKit/LICENSE.txt' in metadata
+assert 'ReaKit/THIRD_PARTY_CREDITS.md' in metadata
+index = ET.parse(repo/'index.xml')
+release = index.find(".//version[@name='0.27.1']")
+assert release is not None
+indexed_reakit = {
+    source.attrib['file'] for source in release.findall('source')
+    if source.attrib.get('file', '').startswith('ReaKit/')
+}
+assert indexed_reakit == provided_reakit
+print('PASS: local ReaKit dependency closure and v0.27.1 package metadata complete')
 for slider_number in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
                       17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
                       29, 30, 31, 32, 33, 34):

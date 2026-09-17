@@ -7,6 +7,13 @@ below derive from other authors' work and are included and redistributed here
 
 Permission records are kept on file by EON Studios.
 
+DrumCloud v0.27.1 vendors the two ReaKit libraries it imports, pinned exactly
+to ReaKit 1.3.0 at upstream commit
+`04996cc3f86a2b7098e50fc7cfdf0ae561e69ee4`. The files provide the Serum-style
+and Encoder knobs plus pill and segmented selectors used by DrumCloud. Both
+include files are standalone and have no transitive imports; together they are
+the complete runtime dependency closure for DrumCloud's GUI.
+
 ---
 
 ## VU meters (`vu_kbsg.jsfx-inc`, parts of `meters_kbsg.jsfx-inc`)
