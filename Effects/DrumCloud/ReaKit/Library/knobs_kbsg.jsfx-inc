@@ -1,0 +1,199 @@
+// ReaKit control subset bundled with DrumCloud JS v0.27.1.
+// Derived from ReaKit 1.3.x by EON Studios, MIT licensed.
+// Upstream: https://github.com/mequaz-sudo/ReaKit
+// This pinned subset contains only the public Serum/Encoder drawing and
+// shared interaction used by DrumCloud. See ../LICENSE.txt.
+
+@init
+__knobs_kbsg_loaded = 1;
+
+function clamp(x, lo, hi) ( min(max(x, lo), hi); );
+function lerp(a, b, t) ( a + (b - a) * t; );
+function dist(x1, y1, x2, y2) ( sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)); );
+function sign_of(x) ( x < 0 ? -1 : x > 0 ? 1 : 0; );
+
+// Shared ReaKit interaction model: vertical drag, Ctrl/Shift fine adjustment,
+// wheel, double-click/right-click reset and persistent automation state.
+function rk_std_interact(mem, cx, cy, radius, cur_val, vmin, vmax, vdefault, n_detents)
+local(hover, d, new_val, fine, step, now, det_step, cur_det, new_det, range, scl)
+(
+  d = dist(mx, my, cx, cy);
+  hover = (d <= radius);
+  range = vmax - vmin;
+  hover || mem[1] ? (
+    mem[0] = min(mem[0] + dt * hv_speed, 1);
+  ) : (
+    mem[0] = max(mem[0] - dt * hv_speed, 0);
+  );
+  mem[6] = hover || mem[1];
+  new_val = cur_val;
+  mem[5] = 0;
+
+  hover && rmb_down ? ( new_val = vdefault; mem[5] = 1; );
+  hover && lmb_down ? (
+    now = time_precise();
+    (now - mem[4] < 0.3) ? ( new_val = vdefault; mem[5] = 1; );
+    mem[4] = now;
+  );
+
+  lmb_down && hover && !mem[1] && !mem[5] ? (
+    mem[1] = 1;
+    mem[2] = my;
+    mem[3] = cur_val;
+  );
+
+  mem[1] && LMB ? (
+    fine = CTRL ? 0.1 : SHIFT ? 0.025 : 1;
+    step = (mem[2] - my) / max(radius * 4, 200) * range * fine;
+    new_val = clamp(mem[3] + step, vmin, vmax);
+  );
+
+  mem[1] && !LMB ? (
+    mem[1] = 0;
+    mem[5] = 1;
+  );
+
+  hover && frame_wheel != 0 ? (
+    n_detents > 1 ? (
+      det_step = range / max(1, n_detents - 1);
+      cur_det = floor((cur_val - vmin) / det_step + 0.5);
+      new_det = clamp(cur_det + sign_of(frame_wheel), 0, n_detents - 1);
+      new_val = vmin + new_det * det_step;
+    ) : (
+      scl = CTRL ? 0.005 : SHIFT ? 0.002 : 0.02;
+      new_val = clamp(cur_val + frame_wheel * range * scl, vmin, vmax);
+    );
+    mem[5] = 1;
+  );
+  new_val;
+);
+
+// ReaKit Encoder style (style 11): grey metal body and accent LED ring.
+function encoder_draw(cx, cy, radius, value, vmin, vmax, hover_t, cr, cg, cb)
+local(ht, vn, i, a, led_orbit, led_r, led_pos, led_dist, led_bright,
+      notch_in, notch_out, val_rad, lx, ly)
+(
+  ht = pow(hover_t, 2);
+  vn = clamp((value - vmin) / max(0.0000001, vmax - vmin), 0, 1);
+  led_orbit = radius * 1.3;
+  led_r = radius * 0.08;
+  led_pos = vn * 15;
+  i = 0;
+  loop(16,
+    a = (-130 + i * 260 / 15) * $pi / 180;
+    led_dist = abs(i - led_pos);
+    led_bright = max(0, 1 - led_dist * 0.4) * lerp(0.7, 1.0, ht);
+    lx = cx + sin(a) * led_orbit;
+    ly = cy - cos(a) * led_orbit;
+    gfx_set(0.12, 0.12, 0.13, 0.6);
+    gfx_circle(lx, ly, led_r * 1.2, 1);
+    led_bright > 0.05 ? (
+      gfx_set(cr * led_bright, cg * led_bright, cb * led_bright, 1);
+      gfx_circle(lx, ly, led_r * (0.8 + led_bright * 0.5), 1);
+      led_bright > 0.5 ? (
+        gfx_set(cr * led_bright, cg * led_bright, cb * led_bright, 0.2 * led_bright);
+        gfx_circle(lx, ly, led_r * 2, 1);
+      );
+    );
+    i += 1;
+  );
+
+  gfx_set(0.42 + 0.05 * ht, 0.42 + 0.05 * ht, 0.44 + 0.05 * ht, 1);
+  gfx_circle(cx, cy, radius, 1);
+  gfx_set(0.52 + 0.05 * ht, 0.52 + 0.05 * ht, 0.54 + 0.05 * ht, 1);
+  gfx_circle(cx, cy, radius * 0.75, 1);
+  gfx_set(0.46, 0.46, 0.48, 1);
+  gfx_circle(cx, cy, radius * 0.5, 1);
+
+  notch_in = radius * 0.88;
+  notch_out = radius;
+  gfx_set(0.30, 0.30, 0.32, 1);
+  i = 0;
+  loop(24,
+    a = i * tau / 24;
+    gfx_line(cx + sin(a) * notch_in, cy - cos(a) * notch_in,
+             cx + sin(a) * notch_out, cy - cos(a) * notch_out);
+    i += 1;
+  );
+
+  gfx_set(0.30, 0.30, 0.32, 1);
+  gfx_circle(cx, cy, radius, 0);
+  gfx_set(0.2, 0.2, 0.22, 1);
+  gfx_circle(cx, cy, radius * 0.12, 1);
+
+  val_rad = (vn * 260 - 130) * $pi / 180;
+  gfx_set(0.85, 0.85, 0.85, 1);
+  gfx_line(cx + sin(val_rad) * radius * 0.3, cy - cos(val_rad) * radius * 0.3,
+           cx + sin(val_rad) * radius * 0.8, cy - cos(val_rad) * radius * 0.8);
+  gfx_line(cx + sin(val_rad) * radius * 0.3 + cos(val_rad),
+           cy - cos(val_rad) * radius * 0.3 + sin(val_rad),
+           cx + sin(val_rad) * radius * 0.8 + cos(val_rad),
+           cy - cos(val_rad) * radius * 0.8 + sin(val_rad));
+);
+
+// ReaKit Serum style (style 17): dark body with accent arc and pointer.
+function serum_knob_draw(cx, cy, radius, value, vmin, vmax, is_sym, hover_t,
+                         cr, cg, cb, bgr, bgg, bgb)
+local(RAD130_, scale, voffset, val_rad, n_passes, i, body_r,
+      glow_a, start_rad, frac, px, py, pr)
+(
+  RAD130_ = 130 * $pi / 180;
+  scale = 260 / max(0.0000001, vmax - vmin);
+  voffset = -vmin * 260 / max(0.0000001, vmax - vmin) - 130;
+  val_rad = (value * scale + voffset) * $pi / 180;
+  body_r = radius * 0.80;
+  glow_a = lerp(0.75, 1.0, hover_t);
+
+  i = 0;
+  loop(6,
+    frac = i / 5;
+    gfx_set(lerp(0.09, 0.20, frac), lerp(0.09, 0.20, frac), lerp(0.11, 0.23, frac), 1);
+    gfx_circle(cx, cy, body_r * (1 - frac * 0.32), 1, 1);
+    i += 1;
+  );
+  gfx_set(0.30, 0.32, 0.36, 0.6);
+  gfx_circle(cx, cy, body_r, 0);
+
+  n_passes = max(2, floor(radius / 6));
+  start_rad = is_sym ? (is_sym < 1 ? (is_sym * 2 - 1) * RAD130_ : 0) : -RAD130_;
+  gfx_set(bgr, bgg, bgb, 0.22);
+  i = 0;
+  loop(n_passes,
+    gfx_arc(cx, cy, radius - i * 0.7, -RAD130_, RAD130_, 1);
+    i += 1;
+  );
+  gfx_set(cr, cg, cb, 0.22 * glow_a);
+  i = 0;
+  loop(max(3, n_passes + 1),
+    gfx_arc(cx, cy, radius - i * 0.9, start_rad, val_rad, 1);
+    i += 1;
+  );
+  gfx_set(cr, cg, cb, glow_a);
+  i = 0;
+  loop(n_passes,
+    gfx_arc(cx, cy, radius - i * 0.7, start_rad, val_rad, 1);
+    i += 1;
+  );
+
+  px = cx + sin(val_rad) * body_r * 0.86;
+  py = cy - cos(val_rad) * body_r * 0.86;
+  pr = max(1.3, radius * 0.06);
+  gfx_set(cr, cg, cb, glow_a);
+  gfx_line(cx + sin(val_rad) * body_r * 0.18, cy - cos(val_rad) * body_r * 0.18, px, py);
+  gfx_circle(px, py, pr, 1, 1);
+  gfx_set(0.05, 0.05, 0.07, 1);
+  gfx_circle(cx, cy, body_r * 0.22, 1, 1);
+);
+
+function rk_knob_draw(style, cx, cy, radius, value, vmin, vmax, is_sym, hover_t,
+                      cr, cg, cb, n_det, bgr, bgg, bgb)
+(
+  style == 11 ? encoder_draw(cx, cy, radius, value, vmin, vmax, hover_t, cr, cg, cb) :
+  serum_knob_draw(cx, cy, radius, value, vmin, vmax, is_sym, hover_t,
+                  cr, cg, cb, bgr, bgg, bgb);
+);
+
+function rk_knob_interact(style, mem, cx, cy, radius, cur_val, vmin, vmax, vdefault, n_detents)
+(
+  rk_std_interact(mem, cx, cy, radius, cur_val, vmin, vmax, vdefault, n_detents);
+);
