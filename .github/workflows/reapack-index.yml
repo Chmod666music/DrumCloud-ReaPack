@@ -19,12 +19,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Apply pending release preparation
-        run: |
-          if [ -f tools/hotfix_0271.py ]; then
-            python3 tools/hotfix_0271.py
-          fi
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -36,12 +30,12 @@ jobs:
       - name: Build and validate index
         run: reapack-index --rebuild --no-commit .
 
-      - name: Publish updated index and release preparation
+      - name: Publish updated index
         run: |
-          if [ -n "$(git status --porcelain)" ]; then
+          if [ -n "$(git status --porcelain index.xml)" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "Release DrumCloud JS v0.27.1 self-contained ReaKit hotfix"
+            git add index.xml
+            git commit -m "Update ReaPack index"
             git push
           fi
