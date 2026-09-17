@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="DrumCloud-ReaPack" commit="081c2e618e944e0eebaf6ee89a13e91aafc9c016">
+<index version="1" name="DrumCloud-ReaPack" commit="7647165a55de768db8e3eff6e86cae58cedbd89a">
   <category name="Effects/DrumCloud">
     <reapack name="DrumCloud_JS.jsfx" type="effect" desc="DrumCloud JS">
       <metadata>
@@ -7,6 +7,8 @@
         <link rel="website" href="https://freesound.org/people/REVERBERA/packs/45512/">REVERBERA sound pack</link>
         <link rel="website" href="https://github.com/Chmod666music/DrumCloud-ReaPack/blob/main/README.md">Documentation</link>
         <link rel="website" href="https://github.com/mequaz-sudo/ReaKit">ReaKit upstream</link>
+        <link rel="website" href="https://raw.githubusercontent.com/mequaz-sudo/ReaKit/main/index.xml">ReaKit ReaPack repository</link>
+        <link rel="website" href="https://github.com/Chmod666music/DrumCloud-ReaPack/issues">Report an issue</link>
       </metadata>
       <version name="0.17.1-beta" author="Chmod666music" time="2026-08-27T20:06:57Z">
         <changelog><![CDATA[Initial public beta ReaPack release.]]></changelog>
